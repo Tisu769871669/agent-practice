@@ -1,0 +1,15 @@
+{
+  "name": "agent-practice",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "web:dev": "astro dev --root apps/web",
+    "web:build": "astro build --root apps/web",
+    "test:py": "pytest",
+    "test": "pytest && npm run web:build"
+  },
+  "dependencies": {
+    "astro": "^5.0.0"
+  }
+}

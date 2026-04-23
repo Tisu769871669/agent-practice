@@ -1,0 +1,37 @@
+---
+import "../styles/global.css";
+
+const { title = "Agent Practice", description = "Learn agent engineering by solving graded local challenges." } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="topbar">
+        <a href="/" class="brand">
+          <span class="brand-mark">AP</span>
+          <span class="brand-copy">
+            <strong>Agent Practice</strong>
+            <small>Open-source agent training lab</small>
+          </span>
+        </a>
+        <nav class="nav">
+          <a href="/path">Path</a>
+          <a href="/challenges">Challenges</a>
+          <a href="/contribute">Contribute</a>
+          <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </header>
+      <main class="page">
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>

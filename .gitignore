@@ -1,6 +1,7 @@
 .worktrees
 .worktrees/
 .superpowers/
+.devserver/
 node_modules/
 dist/
 .astro/

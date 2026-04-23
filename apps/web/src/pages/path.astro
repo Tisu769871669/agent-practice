@@ -1,0 +1,47 @@
+---
+import Layout from "../components/Layout.astro";
+import { challenges, stages } from "../lib/challenges";
+---
+
+<Layout title="Agent Practice | Learning Path">
+  <section class="page-hero">
+    <div class="copy-block">
+      <div class="section-kicker">Route</div>
+      <h2>The official path is opinionated, not closed.</h2>
+      <p>
+        We teach through LangChain and LangGraph examples because they make the route concrete. The challenge contract
+        still stays framework-neutral: if your solution can satisfy the local runner, it belongs here.
+      </p>
+    </div>
+    <div class="copy-block">
+      <div class="section-kicker">Stage Map</div>
+      <div class="chip-row">
+        {stages.map((stage) => <span class="tag">{stage.name}</span>)}
+      </div>
+      <p class="footer-note">Thirty challenges total. Ten launch runnable. The rest stay visible so contributors know what to build next.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">Sequence</div>
+        <h2>All 30 challenges</h2>
+      </div>
+    </div>
+    <div class="list-table">
+      {challenges.map((challenge) => (
+        <div class="list-row">
+          <span class="mono">{challenge.id}</span>
+          <div>
+            <strong>{challenge.title}</strong>
+            <span class="muted">{challenge.focus}</span>
+          </div>
+          <span>{challenge.stage}</span>
+          <span class={`status ${challenge.status}`}>{challenge.status}</span>
+          <span>{challenge.difficulty}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+</Layout>

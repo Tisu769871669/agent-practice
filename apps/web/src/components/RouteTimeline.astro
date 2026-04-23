@@ -1,0 +1,15 @@
+---
+const { stages } = Astro.props as { stages: Array<{ name: string; note: string }> };
+---
+
+<section class="timeline">
+  {stages.map((stage, index) => (
+    <div class="timeline-item">
+      <div class="timeline-index">{String(index + 1).padStart(2, "0")}</div>
+      <div>
+        <h3>{stage.name}</h3>
+        <p>{stage.note}</p>
+      </div>
+    </div>
+  ))}
+</section>

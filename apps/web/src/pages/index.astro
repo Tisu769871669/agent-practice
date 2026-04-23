@@ -1,0 +1,106 @@
+---
+import Layout from "../components/Layout.astro";
+import ChallengeCard from "../components/ChallengeCard.astro";
+import RouteTimeline from "../components/RouteTimeline.astro";
+import { challenges, runnableChallenges, stages } from "../lib/challenges";
+
+const total = challenges.length;
+const runnable = runnableChallenges.length;
+---
+
+<Layout title="Agent Practice | Open-source agent training lab">
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="kicker">LOCAL FIRST / OPEN SOURCE / GRADED PRACTICE</div>
+      <h1>Learn agent engineering by shipping through friction.</h1>
+      <p>
+        Agent Practice turns agent learning into a route of real, graded challenges. Read the path on the web, clone the
+        repo, solve locally with any framework, and inspect deterministic feedback from a runner and grader.
+      </p>
+      <div class="actions">
+        <a class="button" href="/path">Start the Path</a>
+        <a class="ghost-button" href="https://github.com/" target="_blank" rel="noreferrer">Clone on GitHub</a>
+      </div>
+    </div>
+
+    <aside class="panel hero-panel">
+      <div class="section-kicker">Launch Snapshot</div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <strong>{total}</strong>
+          <span class="muted">planned challenges</span>
+        </div>
+        <div class="stat-card">
+          <strong>{runnable}</strong>
+          <span class="muted">launch runnable</span>
+        </div>
+        <div class="stat-card">
+          <strong>8</strong>
+          <span class="muted">learning stages</span>
+        </div>
+        <div class="stat-card">
+          <strong>LC / LG</strong>
+          <span class="muted">official examples</span>
+        </div>
+      </div>
+      <p class="footer-note">
+        Official path: LangChain and LangGraph. Runtime contract: framework-neutral.
+      </p>
+    </aside>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">Learning Route</div>
+        <h2>Foundations to Capstone</h2>
+      </div>
+      <a class="ghost-button" href="/path">View full path</a>
+    </div>
+    <RouteTimeline stages={stages} />
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">Runnable Launch Set</div>
+        <h2>Ten challenges you can start with</h2>
+      </div>
+      <a class="ghost-button" href="/challenges">Browse catalog</a>
+    </div>
+    <div class="challenge-grid">
+      {runnableChallenges.map((challenge) => <ChallengeCard challenge={challenge} />)}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">Workflow</div>
+        <h2>Website for discovery, local repo for execution</h2>
+      </div>
+    </div>
+    <div class="workflow-grid">
+      <div class="workflow-step">
+        <div class="mono">01</div>
+        <strong>Browse</strong>
+        <p>Use the path and catalog to choose a challenge with the right difficulty and focus.</p>
+      </div>
+      <div class="workflow-step">
+        <div class="mono">02</div>
+        <strong>Clone</strong>
+        <p>Pull the repo locally and pick raw Python, LangChain, LangGraph, or your own framework.</p>
+      </div>
+      <div class="workflow-step">
+        <div class="mono">03</div>
+        <strong>Run</strong>
+        <p>Execute the local runner and capture result.json plus transcript.jsonl for every attempt.</p>
+      </div>
+      <div class="workflow-step">
+        <div class="mono">04</div>
+        <strong>Improve</strong>
+        <p>Use deterministic grading feedback to tighten behavior before moving to the next task.</p>
+      </div>
+    </div>
+  </section>
+</Layout>

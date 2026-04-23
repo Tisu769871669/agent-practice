@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-practice.dev/schemas/submission.schema.json",
+  "title": "Agent Practice Submission",
+  "type": "object",
+  "required": ["template", "entrypoint"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "default": "0.1"
+    },
+    "submission_id": {
+      "type": "string",
+      "default": "local"
+    },
+    "template": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entrypoint": {
+      "type": "object",
+      "required": ["module", "callable"],
+      "properties": {
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "callable": {
+          "type": "string",
+          "minLength": 1
+        },
+        "signature": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

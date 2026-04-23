@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-practice.dev/schemas/transcript.schema.json",
+  "title": "Agent Practice Transcript Event",
+  "type": "object",
+  "required": ["type"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "case_start",
+        "tool_call",
+        "tool_result",
+        "agent_output",
+        "case_end",
+        "error"
+      ]
+    },
+    "timestamp": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "case_id": {
+      "type": ["string", "null"]
+    },
+    "payload": {
+      "type": "object"
+    },
+    "message": {
+      "type": ["string", "null"]
+    },
+    "error": {
+      "type": ["string", "null"]
+    },
+    "duration_ms": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    }
+  },
+  "additionalProperties": true
+}

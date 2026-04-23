@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-practice.dev/schemas/result.schema.json",
+  "title": "Agent Practice Result",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "challenge_id",
+    "challenge_version",
+    "runner_version",
+    "submission_id",
+    "template",
+    "score",
+    "max_score",
+    "passed",
+    "duration_ms",
+    "metrics",
+    "cases",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "challenge_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "challenge_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runner_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "submission_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "template": {
+      "type": "string",
+      "minLength": 1
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0
+    },
+    "max_score": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "passed": {
+      "type": "boolean"
+    },
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/metric"
+      }
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "metric": {
+      "type": "object",
+      "required": ["name", "score", "max_score", "passed"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_score": {
+          "type": "number",
+          "minimum": 0
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "feedback": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "case": {
+      "type": "object",
+      "required": ["case_id", "score", "max_score", "passed", "duration_ms"],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_score": {
+          "type": "number",
+          "minimum": 0
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "duration_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "error": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

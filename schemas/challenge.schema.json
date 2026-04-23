@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agent-practice.dev/schemas/challenge.schema.json",
+  "title": "Agent Practice Challenge",
+  "type": "object",
+  "required": [
+    "id",
+    "slug",
+    "title",
+    "track",
+    "difficulty",
+    "status",
+    "version",
+    "summary",
+    "tags",
+    "entrypoint",
+    "fixtures",
+    "limits",
+    "scoring"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "track": {
+      "type": "string",
+      "minLength": 1
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["easy", "medium", "hard", "expert"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planned", "draft", "runnable", "deprecated"]
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "frameworks": {
+      "type": "object"
+    },
+    "entrypoint": {
+      "type": "object",
+      "required": ["module", "callable"],
+      "properties": {
+        "module": {
+          "type": "string",
+          "minLength": 1
+        },
+        "callable": {
+          "type": "string",
+          "minLength": 1
+        },
+        "signature": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "schemas": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "fixtures": {
+      "type": "object",
+      "required": ["public"],
+      "properties": {
+        "public": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hidden": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "limits": {
+      "type": "object",
+      "required": ["timeout_seconds", "max_tool_calls", "max_output_chars"],
+      "properties": {
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_tool_calls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_output_chars": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "scoring": {
+      "type": "object",
+      "required": ["max_score", "pass_score", "metrics"],
+      "properties": {
+        "max_score": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "pass_score": {
+          "type": "number",
+          "minimum": 0
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "weight"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "weight": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

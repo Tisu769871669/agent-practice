@@ -189,6 +189,13 @@ def test_unknown_transcript_event_type_fails() -> None:
             ChallengeConfig,
             {
                 **minimal_challenge_config(),
+                "tags": ["instruction-following", ""],
+            },
+        ),
+        (
+            ChallengeConfig,
+            {
+                **minimal_challenge_config(),
                 "entrypoint": {
                     **minimal_challenge_config()["entrypoint"],
                     "module": "",
@@ -217,6 +224,73 @@ def test_unknown_transcript_event_type_fails() -> None:
             {
                 **minimal_grade_report(),
                 "template": "",
+            },
+        ),
+        (
+            ChallengeConfig,
+            {
+                **minimal_challenge_config(),
+                "scoring": {
+                    **minimal_challenge_config()["scoring"],
+                    "metrics": [
+                        {
+                            "name": "",
+                            "weight": 60,
+                        }
+                    ],
+                },
+            },
+        ),
+        (
+            GradeReport,
+            {
+                **minimal_grade_report(),
+                "challenge_id": "",
+            },
+        ),
+        (
+            GradeReport,
+            {
+                **minimal_grade_report(),
+                "challenge_version": "",
+            },
+        ),
+        (
+            GradeReport,
+            {
+                **minimal_grade_report(),
+                "runner_version": "",
+            },
+        ),
+        (
+            GradeReport,
+            {
+                **minimal_grade_report(),
+                "submission_id": "",
+            },
+        ),
+        (
+            GradeReport,
+            {
+                **minimal_grade_report(),
+                "metrics": [
+                    {
+                        **minimal_grade_report()["metrics"][0],
+                        "name": "",
+                    }
+                ],
+            },
+        ),
+        (
+            GradeReport,
+            {
+                **minimal_grade_report(),
+                "cases": [
+                    {
+                        **minimal_grade_report()["cases"][0],
+                        "case_id": "",
+                    }
+                ],
             },
         ),
     ],

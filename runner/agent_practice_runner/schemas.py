@@ -69,7 +69,7 @@ class LimitsConfig(AgentPracticeModel):
 
 
 class ScoringMetric(AgentPracticeModel):
-    name: str
+    name: NonEmptyString
     weight: float = Field(ge=0)
 
 
@@ -88,7 +88,7 @@ class ChallengeConfig(AgentPracticeModel):
     status: ChallengeStatus
     version: NonEmptyString
     summary: NonEmptyString
-    tags: list[str]
+    tags: list[NonEmptyString]
     entrypoint: EntrypointConfig
     fixtures: FixtureConfig
     limits: LimitsConfig
@@ -106,7 +106,7 @@ class SubmissionConfig(AgentPracticeModel):
 
 
 class GradeMetric(AgentPracticeModel):
-    name: str
+    name: NonEmptyString
     score: float = Field(ge=0)
     max_score: float = Field(ge=0)
     passed: bool
@@ -114,7 +114,7 @@ class GradeMetric(AgentPracticeModel):
 
 
 class GradeCase(AgentPracticeModel):
-    case_id: str
+    case_id: NonEmptyString
     score: float = Field(ge=0)
     max_score: float = Field(ge=0)
     passed: bool
@@ -124,10 +124,10 @@ class GradeCase(AgentPracticeModel):
 
 class GradeReport(AgentPracticeModel):
     schema_version: str
-    challenge_id: str
-    challenge_version: str
-    runner_version: str
-    submission_id: str
+    challenge_id: NonEmptyString
+    challenge_version: NonEmptyString
+    runner_version: NonEmptyString
+    submission_id: NonEmptyString
     template: NonEmptyString
     score: float = Field(ge=0)
     max_score: float = Field(gt=0)

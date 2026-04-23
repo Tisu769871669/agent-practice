@@ -8,7 +8,7 @@ Stage 1 is the current MVP scope.
 
 - Static Astro website for discovery.
 - 30 challenge learning route.
-- 10 runnable launch challenges.
+- 10 launch runnable challenges.
 - Local Python runner.
 - Deterministic graders.
 - Raw Python, LangChain, and LangGraph starter templates.
@@ -31,17 +31,19 @@ Leaderboards are only meaningful after hosted submissions exist. Entries should 
 
 ## Launch challenge route
 
-The first 10 runnable challenges are:
+The 10 launch runnable challenges are:
 
-1. Echo Agent
-2. JSON Only
-3. Tool Picker
-4. Calculator Agent
-5. Ticket Triage
-6. Mini RAG
-7. Tool Error Recovery
-8. Two-Step Researcher
-9. Injection Guard I
-10. Eval Harness Basics
+1. 001 Echo Agent
+2. 002 JSON Only
+3. 003 Tool Picker
+4. 004 Calculator Agent
+5. 005 Ticket Triage
+6. 006 Mini RAG
+7. 008 Tool Error Recovery
+8. 010 Two-Step Researcher
+9. 013 Injection Guard I
+10. 017 Eval Harness Basics
+
+Runnable IDs: 001, 002, 003, 004, 005, 006, 008, 010, 013, 017.
 
 The remaining 20 planned challenges cover context compression, memory, routing, form filling, human approval, trace audit, conflicting sources, long-running workflows, memory conflict resolution, escalation, regression evaluation, LLM judge calibration, tool-result injection defense, multi-agent handoff, budget-aware routing, adversarial RAG, and a capstone support agent.

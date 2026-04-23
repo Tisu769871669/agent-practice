@@ -1,6 +1,6 @@
 # Challenge Authoring
 
-Agent Practice challenges teach agent engineering through small, runnable tasks with explicit contracts. The MVP route contains 30 challenges, with the first 10 runnable at launch.
+Agent Practice challenges teach agent engineering through small, runnable tasks with explicit contracts. The MVP route contains 30 challenges, with 10 launch runnable challenges.
 
 The MVP remains local-first: contributors author files in the repository, learners run public fixtures locally, and graders produce local reports. Accounts, cloud submissions, hosted execution, and leaderboards are out of scope for MVP challenge authoring.
 

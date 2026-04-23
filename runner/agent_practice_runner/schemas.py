@@ -1,8 +1,16 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import (
+    AwareDatetime,
+    BaseModel,
+    ConfigDict,
+    Field,
+    StringConstraints,
+    field_validator,
+    model_validator,
+)
 
 
 ChallengeStatus = Literal["planned", "draft", "runnable", "deprecated"]
@@ -15,6 +23,7 @@ TranscriptEventType = Literal[
     "case_end",
     "error",
 ]
+NonEmptyString = Annotated[str, StringConstraints(min_length=1)]
 
 
 class AgentPracticeModel(BaseModel):
@@ -22,14 +31,35 @@ class AgentPracticeModel(BaseModel):
 
 
 class EntrypointConfig(AgentPracticeModel):
-    module: str
-    callable: str
+    module: NonEmptyString
+    callable: NonEmptyString
     signature: str | None = None
+
+    @field_validator("signature", mode="before")
+    @classmethod
+    def reject_null_signature(cls, value: Any) -> Any:
+        if value is None:
+            raise ValueError("signature may be omitted or a string, not null")
+        return value
 
 
 class FixtureConfig(AgentPracticeModel):
-    public: str
+    public: NonEmptyString
     hidden: str | None = None
+
+    @field_validator("hidden", mode="before")
+    @classmethod
+    def reject_null_hidden(cls, value: Any) -> Any:
+        if value is None:
+            raise ValueError("hidden may be omitted or a string, not null")
+        return value
+
+    @model_validator(mode="after")
+    def validate_extra_fixture_values(self) -> FixtureConfig:
+        for key, value in (self.model_extra or {}).items():
+            if not isinstance(value, str):
+                raise ValueError(f"fixture field '{key}' must be a string")
+        return self
 
 
 class LimitsConfig(AgentPracticeModel):
@@ -50,14 +80,14 @@ class ScoringConfig(AgentPracticeModel):
 
 
 class ChallengeConfig(AgentPracticeModel):
-    id: str
-    slug: str
-    title: str
-    track: str
+    id: NonEmptyString
+    slug: NonEmptyString
+    title: NonEmptyString
+    track: NonEmptyString
     difficulty: ChallengeDifficulty
     status: ChallengeStatus
-    version: str
-    summary: str
+    version: NonEmptyString
+    summary: NonEmptyString
     tags: list[str]
     entrypoint: EntrypointConfig
     fixtures: FixtureConfig
@@ -70,7 +100,7 @@ class ChallengeConfig(AgentPracticeModel):
 class SubmissionConfig(AgentPracticeModel):
     schema_version: str = "0.1"
     submission_id: str = "local"
-    template: str
+    template: NonEmptyString
     entrypoint: EntrypointConfig
     metadata: dict[str, Any] = Field(default_factory=dict)
 
@@ -98,7 +128,7 @@ class GradeReport(AgentPracticeModel):
     challenge_version: str
     runner_version: str
     submission_id: str
-    template: str
+    template: NonEmptyString
     score: float = Field(ge=0)
     max_score: float = Field(gt=0)
     passed: bool
@@ -110,7 +140,7 @@ class GradeReport(AgentPracticeModel):
 
 class TranscriptEvent(AgentPracticeModel):
     type: TranscriptEventType
-    timestamp: str | None = None
+    timestamp: AwareDatetime | None = None
     case_id: str | None = None
     payload: dict[str, Any] = Field(default_factory=dict)
     message: str | None = None

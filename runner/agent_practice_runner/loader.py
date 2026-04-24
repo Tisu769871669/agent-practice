@@ -26,14 +26,22 @@ def load_jsonl(path: str | Path) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
 
     with jsonl_path.open("r", encoding="utf-8") as handle:
-        for line in handle:
+        for line_number, line in enumerate(handle, start=1):
             stripped = line.strip()
             if not stripped:
                 continue
 
-            row = json.loads(stripped)
+            try:
+                row = json.loads(stripped)
+            except json.JSONDecodeError as exc:
+                raise ValueError(
+                    f"Malformed JSON in {jsonl_path} line {line_number}: {exc.msg}"
+                ) from exc
+
             if not isinstance(row, dict):
-                raise ValueError(f"Expected JSON object in {jsonl_path}")
+                raise ValueError(
+                    f"Expected JSON object in {jsonl_path} line {line_number}"
+                )
             rows.append(row)
 
     return rows

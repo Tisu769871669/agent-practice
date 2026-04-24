@@ -62,10 +62,36 @@ def test_write_result_writes_valid_json(tmp_path: Path) -> None:
     assert written["passed"] is True
 
 
-def test_summarize_result_includes_score_and_pass_fail() -> None:
+def test_write_result_accepts_plain_dict_and_writes_trailing_newline(tmp_path: Path) -> None:
+    result_path = tmp_path / "result.json"
+
+    write_result(minimal_grade_report(), result_path)
+
+    text = result_path.read_text(encoding="utf-8")
+    written = json.loads(text)
+
+    assert text.endswith("\n")
+    assert written["challenge_id"] == "001"
+    assert written["score"] == 86
+
+
+def test_write_result_uses_stable_sorted_serialization(tmp_path: Path) -> None:
+    result_path = tmp_path / "result.json"
+
+    write_result(minimal_grade_report(), result_path)
+
+    first_key = next(
+        line.strip()
+        for line in result_path.read_text(encoding="utf-8").splitlines()
+        if line.strip().startswith('"')
+    )
+
+    assert first_key == '"artifacts": {'
+
+
+def test_summarize_result_uses_exact_current_format() -> None:
     report = GradeReport(**minimal_grade_report())
 
     summary = summarize_result(report)
 
-    assert "86" in summary
-    assert "pass" in summary.lower()
+    assert summary == "PASS 001 score=86/100 duration_ms=8230"

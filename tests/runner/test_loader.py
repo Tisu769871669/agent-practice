@@ -9,8 +9,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "runner"))
 
-from agent_practice_runner.loader import load_challenge, load_jsonl  # noqa: E402
-from agent_practice_runner.schemas import ChallengeConfig  # noqa: E402
+from agent_practice_runner.loader import load_challenge, load_jsonl, load_submission  # noqa: E402
+from agent_practice_runner.schemas import ChallengeConfig, SubmissionConfig  # noqa: E402
 
 
 def minimal_challenge_config() -> dict:
@@ -50,6 +50,19 @@ def minimal_challenge_config() -> dict:
     }
 
 
+def minimal_submission_config() -> dict:
+    return {
+        "schema_version": "0.1",
+        "submission_id": "local",
+        "template": "raw-python",
+        "entrypoint": {
+            "module": "solution.agent",
+            "callable": "run",
+            "signature": "run(input: dict, context: AgentContext) -> dict",
+        },
+    }
+
+
 def test_load_challenge_reads_challenge_yaml(tmp_path: Path) -> None:
     challenge_dir = tmp_path / "001-echo-agent"
     challenge_dir.mkdir()
@@ -81,9 +94,87 @@ def test_load_jsonl_returns_list_of_dicts(tmp_path: Path) -> None:
     assert rows == expected
 
 
+def test_load_jsonl_skips_empty_lines(tmp_path: Path) -> None:
+    jsonl_path = tmp_path / "public.jsonl"
+    jsonl_path.write_text(
+        '{"case_id": "public-001"}\n\n{"case_id": "public-002"}\n',
+        encoding="utf-8",
+    )
+
+    rows = load_jsonl(jsonl_path)
+
+    assert rows == [{"case_id": "public-001"}, {"case_id": "public-002"}]
+
+
+def test_load_jsonl_malformed_json_includes_path_and_line(tmp_path: Path) -> None:
+    jsonl_path = tmp_path / "public.jsonl"
+    jsonl_path.write_text(
+        '{"case_id": "public-001"}\n{"case_id": \n',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError) as exc_info:
+        load_jsonl(jsonl_path)
+
+    message = str(exc_info.value)
+    assert str(jsonl_path) in message
+    assert "line 2" in message
+
+
+def test_load_jsonl_non_object_includes_path_and_line(tmp_path: Path) -> None:
+    jsonl_path = tmp_path / "public.jsonl"
+    jsonl_path.write_text(
+        '{"case_id": "public-001"}\n\n["not", "an", "object"]\n',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError) as exc_info:
+        load_jsonl(jsonl_path)
+
+    message = str(exc_info.value)
+    assert str(jsonl_path) in message
+    assert "line 3" in message
+
+
 def test_load_challenge_missing_file_raises(tmp_path: Path) -> None:
     challenge_dir = tmp_path / "missing-challenge"
     challenge_dir.mkdir()
 
     with pytest.raises(FileNotFoundError):
         load_challenge(challenge_dir)
+
+
+def test_load_submission_reads_direct_file_path(tmp_path: Path) -> None:
+    submission_path = tmp_path / "custom-submission.yaml"
+    submission_path.write_text(
+        yaml.safe_dump(minimal_submission_config()),
+        encoding="utf-8",
+    )
+
+    submission = load_submission(submission_path)
+
+    assert isinstance(submission, SubmissionConfig)
+    assert submission.submission_id == "local"
+    assert submission.template == "raw-python"
+
+
+def test_load_submission_reads_submission_yaml_from_directory(tmp_path: Path) -> None:
+    submission_dir = tmp_path / "submission"
+    submission_dir.mkdir()
+    (submission_dir / "submission.yaml").write_text(
+        yaml.safe_dump(minimal_submission_config()),
+        encoding="utf-8",
+    )
+
+    submission = load_submission(submission_dir)
+
+    assert isinstance(submission, SubmissionConfig)
+    assert submission.entrypoint.module == "solution.agent"
+
+
+def test_load_submission_missing_submission_yaml_raises(tmp_path: Path) -> None:
+    submission_dir = tmp_path / "missing-submission"
+    submission_dir.mkdir()
+
+    with pytest.raises(FileNotFoundError):
+        load_submission(submission_dir)

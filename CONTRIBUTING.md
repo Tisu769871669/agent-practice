@@ -8,13 +8,12 @@ Runnable challenges live under `challenges/<id>-<slug>/` and are the source of t
 
 - `challenge.yaml`
 - `README.md`
-- `starter/`
 - `fixtures/public.jsonl`
 - `schemas/input.schema.json`
 - `schemas/output.schema.json`
 - `grader.py`
 
-Challenge metadata should use the approved status vocabulary: `planned`, `draft`, `runnable`, or `deprecated`. The initial launch route contains 30 challenges, with 10 marked runnable for the MVP. Keep challenge statements framework-neutral: submissions expose `run(input: dict, context: AgentContext) -> dict`, while official starters may demonstrate raw Python, LangChain, and LangGraph.
+Challenge metadata should use the MVP status vocabulary: `planned` or `runnable`. The initial launch route contains 30 challenges, with 10 marked runnable for the MVP. Keep challenge statements framework-neutral: submissions expose `run(input: dict, context: AgentContext) -> dict`, while reusable starters live in top-level `templates/raw-python`, `templates/langchain`, and `templates/langgraph`.
 
 ## Grader contract
 
@@ -25,7 +24,7 @@ MVP graders are deterministic Python graders. They should not call an LLM, depen
 - pass/fail status
 - metric-level scores and feedback
 - case-level scores, duration, and errors
-- artifact paths such as `transcript.jsonl`, `stdout.log`, and `stderr.log`
+- artifact paths such as `transcript.jsonl`
 
 The local runner writes `runs/<challenge_id>/<timestamp>/result.json` and `runs/<challenge_id>/<timestamp>/transcript.jsonl`. Future hosted submissions and leaderboard scoring may use the same contracts, but they are not part of the MVP.
 

@@ -7,7 +7,7 @@ The MVP does not include user accounts, online submissions, hosted sandboxes, pa
 ## System boundaries
 
 - `apps/web` renders the static website from challenge data and documentation. It does not execute user code.
-- `challenges` is the source of truth for challenge metadata, statements, fixtures, schemas, graders, and challenge-specific starters.
+- `challenges` is the source of truth for challenge metadata, statements, fixtures, schemas, and graders.
 - `runner/agent_practice_runner` loads local submissions, executes fixture cases, records transcript events, calls graders, and writes reports.
 - `templates` contains reusable raw Python, LangChain, and LangGraph starter templates.
 - `schemas` defines shared JSON contracts for challenges, submissions, results, and transcripts.

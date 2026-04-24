@@ -12,10 +12,6 @@ Each runnable challenge uses this layout:
 challenges/001-echo-agent/
   challenge.yaml
   README.md
-  starter/
-    raw-python/
-    langchain/
-    langgraph/
   fixtures/
     public.jsonl
   schemas/
@@ -24,7 +20,7 @@ challenges/001-echo-agent/
   grader.py
 ```
 
-`challenge.yaml` contains the metadata used by the website and runner. `README.md` explains the task, learning goals, input/output contract, tools, fixtures, local run command, scoring, example input/output, common failure modes, starter links, and GitHub folder path.
+`challenge.yaml` contains the metadata used by the website and runner. `README.md` explains the task, learning goals, input/output contract, fixtures, local run command, scoring, example input/output, common failure modes, and GitHub folder path. Reusable starter templates live in top-level `templates/`.
 
 ## Required metadata
 
@@ -95,6 +91,4 @@ Public fixtures should be JSONL, deterministic, small enough for local execution
 ## Status vocabulary
 
 - `planned`: visible on the route, not runnable yet.
-- `draft`: under construction and not part of the stable path.
-- `runnable`: has complete metadata, fixtures, schemas, starter files, and grader.
-- `deprecated`: retained for history but no longer recommended.
+- `runnable`: has complete metadata, fixtures, schemas, README, and grader.

@@ -38,7 +38,7 @@ Each challenge declares its own scoring policy in `challenge.yaml`:
 - `pass_score`
 - weighted metric definitions
 
-The launch pattern is a 100 point score with a 70 point pass threshold unless a challenge has a documented reason to differ.
+The launch pattern is a 100 point score with a challenge-specific pass threshold. Simpler extraction tasks may pass around 70, while strict routing, safety, and evaluation tasks generally use 90 so important contract misses do not pass.
 
 ## Transcript policy
 

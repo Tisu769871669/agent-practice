@@ -30,9 +30,8 @@ def grade(case_runs, transcript_path, challenge):
         field_checks = [
             output.get("title") == expected.get("title"),
             output.get("priority") == expected.get("priority"),
+            output.get("due_date") == expected.get("due_date"),
         ]
-        if expected.get("due_date") is not None:
-            field_checks.append(output.get("due_date") == expected.get("due_date"))
 
         field_ratio = sum(field_checks) / len(field_checks)
         expects_null_date = expected.get("due_date") is None
@@ -95,7 +94,7 @@ def grade(case_runs, transcript_path, challenge):
                 "score": field_score,
                 "max_score": FIELD_POINTS,
                 "passed": field_score == FIELD_POINTS,
-                "feedback": "Title, priority, and present dates are scored exactly.",
+                "feedback": "Title, priority, and due_date are scored exactly.",
             },
             {
                 "name": "null_date_handling",

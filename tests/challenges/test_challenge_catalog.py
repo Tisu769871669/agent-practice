@@ -7,7 +7,9 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "runner"))
 
-from agent_practice_runner.loader import load_challenge  # noqa: E402
+from agent_practice_runner.execution import CaseRun  # noqa: E402
+from agent_practice_runner.grading import grade_cases  # noqa: E402
+from agent_practice_runner.loader import load_challenge, load_jsonl  # noqa: E402
 from agent_practice_runner.schemas import ChallengeConfig  # noqa: E402
 
 
@@ -77,3 +79,44 @@ def test_first_two_challenge_configs_parse() -> None:
         challenge = load_challenge(challenge_dir)
 
         assert isinstance(challenge, ChallengeConfig)
+
+
+def test_echo_agent_has_fixture_that_requires_trusting_facts_over_message() -> None:
+    fixtures = load_jsonl(ROOT / "challenges" / "001-echo-agent" / "fixtures" / "public.jsonl")
+
+    assert any(
+        any(fact not in fixture["input"]["message"] for fact in fixture["expected"]["facts"])
+        for fixture in fixtures
+    )
+
+
+def test_json_only_rejects_wrong_dates_when_date_is_missing(tmp_path: Path) -> None:
+    challenge_dir = ROOT / "challenges" / "002-json-only"
+    challenge = load_challenge(challenge_dir)
+    fixtures = load_jsonl(challenge_dir / "fixtures" / "public.jsonl")
+    case_runs = []
+
+    for fixture in fixtures:
+        output = dict(fixture["expected"])
+        if fixture["expected"]["due_date"] is None:
+            output["due_date"] = "2026-01-01"
+        case_runs.append(
+            CaseRun(
+                case_id=fixture["case_id"],
+                input=fixture["input"],
+                output=output,
+                passed=True,
+                duration_ms=0,
+                fixture=fixture,
+            )
+        )
+
+    report = grade_cases(
+        challenge_dir=challenge_dir,
+        case_runs=case_runs,
+        transcript_path=tmp_path / "transcript.jsonl",
+        challenge=challenge,
+    )
+
+    assert report.passed is False
+    assert report.score < challenge.scoring.pass_score

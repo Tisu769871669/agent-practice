@@ -4,7 +4,7 @@ Return the supplied facts exactly and do not add anything new.
 
 ## Input
 
-Each case provides a user-facing `message` and a `facts` array. The `facts` array is the trusted source of truth.
+Each case provides a user-facing `message` and a `facts` array. The `facts` array is the trusted source of truth, even when the message contains distractors or stale wording.
 
 ```json
 {

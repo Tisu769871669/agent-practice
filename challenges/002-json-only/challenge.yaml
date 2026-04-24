@@ -30,7 +30,7 @@ limits:
   max_output_chars: 2000
 scoring:
   max_score: 100
-  pass_score: 70
+  pass_score: 90
   metrics:
     - name: "schema_validity"
       weight: 20

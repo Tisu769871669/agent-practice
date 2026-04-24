@@ -8,7 +8,7 @@ Think of it as a LeetCode-style training lab for agents: browse the route on a s
 
 - Static Astro website with a learning path, catalog, and 30 generated challenge detail pages.
 - 30-challenge roadmap from foundations to capstone agent systems.
-- 10 runnable launch challenges with fixtures, JSON schemas, deterministic graders, and READMEs.
+- 10 runnable launch challenges with rich bilingual statements, fixtures, JSON schemas, deterministic graders, and READMEs.
 - Local Python runner that writes `result.json` and `transcript.jsonl`.
 - Starter templates for raw Python, LangChain, and LangGraph.
 - Framework-neutral submission contract: `run(input: dict, context: AgentContext) -> dict`.
@@ -66,6 +66,7 @@ The Pages workflow sets `PUBLIC_BASE_PATH` to the repository name so project pag
 ```text
 apps/web/                 Static Astro website
 challenges/catalog.yaml   Source of truth for catalog metadata
+challenges/details.yaml   Rich bilingual statements for runnable challenges
 challenges/<id>-<slug>/   Runnable challenge contracts, fixtures, schemas, graders
 runner/                   Local runner package
 templates/                Raw Python, LangChain, and LangGraph starters

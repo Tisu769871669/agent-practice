@@ -1,5 +1,6 @@
 ---
 import Layout from "../../../components/Layout.astro";
+import ChallengeDetailBody from "../../../components/ChallengeDetailBody.astro";
 import { getChallenges, type Challenge } from "../../../lib/challenges";
 import { localizedPath } from "../../../lib/i18n";
 
@@ -43,19 +44,7 @@ python -m agent_practice_runner.cli run ${challenge.id} --submission path/to/sub
     </aside>
   </section>
 
-  <section class="section detail-grid">
-    <article class="detail-block">
-      <div class="section-kicker">练习信号</div>
-      <h3>{challenge.focus}</h3>
-      <p>
-        在本地完成这道题，查看评分报告，然后逐步收紧智能体行为，直到它满足挑战契约。
-      </p>
-    </article>
-    <article class="detail-block">
-      <div class="section-kicker">本地 Runner</div>
-      <pre><code>{runCommand}</code></pre>
-    </article>
-  </section>
+  <ChallengeDetailBody challenge={challenge} lang={lang} runCommand={runCommand} />
 
   <section class="section">
     <a class="ghost-button" href={localizedPath("/challenges", lang)}>返回题库</a>

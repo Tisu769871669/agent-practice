@@ -408,6 +408,18 @@ a {
   gap: 14px;
 }
 
+.detail-section-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
 .detail-block {
   border: 1px solid var(--line);
   background: var(--panel-2);
@@ -415,6 +427,16 @@ a {
 
 .detail-block h3 {
   margin: 8px 0;
+}
+
+.pitfall-list {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  color: var(--muted);
+}
+
+.pitfall-list li + li {
+  margin-top: 8px;
 }
 
 pre {
@@ -464,6 +486,8 @@ pre {
   .page-hero,
   .challenge-detail-hero,
   .detail-grid,
+  .detail-section-grid,
+  .example-grid,
   .timeline,
   .challenge-grid,
   .workflow-grid,

@@ -22,6 +22,8 @@ challenges/001-echo-agent/
 
 `challenge.yaml` contains the metadata used by the website and runner. `README.md` explains the task, learning goals, input/output contract, fixtures, local run command, scoring, example input/output, common failure modes, and GitHub folder path. Reusable starter templates live in top-level `templates/`.
 
+The public website also reads `challenges/details.yaml` for rich bilingual runnable challenge statements. When a planned challenge becomes runnable, add English and simplified Chinese detail entries with background, objective, input contract, output contract, scoring, sample input/output, common pitfalls, and a stretch goal.
+
 ## Required metadata
 
 A runnable challenge should define:

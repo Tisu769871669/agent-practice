@@ -33,6 +33,19 @@ export type Challenge = {
   est: string;
   href: string;
   directory: string;
+  detail?: ChallengeDetail;
+};
+
+export type ChallengeDetail = {
+  background: string;
+  objective: string;
+  input_contract: string;
+  output_contract: string;
+  scoring: string;
+  example_input: Record<string, unknown>;
+  example_output: Record<string, unknown>;
+  common_pitfalls: string[];
+  stretch_goal: string;
 };
 
 export type Stage = {
@@ -63,6 +76,9 @@ type CatalogEntry = {
 const catalogPath = fileURLToPath(
   new URL("../../../../challenges/catalog.yaml", import.meta.url),
 );
+const detailsPath = fileURLToPath(
+  new URL("../../../../challenges/details.yaml", import.meta.url),
+);
 
 const stageOrder = [
   "foundations",
@@ -83,6 +99,7 @@ const estimatesByDifficulty: Record<Difficulty, string> = {
 };
 
 const catalog = loadCatalog();
+const details = loadDetails();
 
 export const challenges: Challenge[] = getChallenges("en");
 
@@ -117,6 +134,7 @@ export function getChallenges(locale: Locale = "en"): Challenge[] {
       est: estimatesByDifficulty[entry.difficulty],
       href: localizedPath(`/challenges/${entry.slug}`, locale),
       directory: `challenges/${entry.id}-${entry.slug}`,
+      detail: details[entry.id]?.[locale],
     };
   });
 }
@@ -163,6 +181,32 @@ function loadCatalog(): Catalog {
   return raw;
 }
 
+function loadDetails(): Record<string, Partial<Record<Locale, ChallengeDetail>>> {
+  const raw = load(readFileSync(detailsPath, "utf-8"));
+
+  if (!raw || typeof raw !== "object") {
+    throw new Error(`Invalid challenge details: ${detailsPath}`);
+  }
+
+  const result: Record<string, Partial<Record<Locale, ChallengeDetail>>> = {};
+
+  for (const [id, localized] of Object.entries(raw)) {
+    if (!localized || typeof localized !== "object") {
+      continue;
+    }
+
+    result[id] = {};
+    for (const locale of ["en", "zh"] as const) {
+      const detail = (localized as Record<string, unknown>)[locale];
+      if (isChallengeDetail(detail)) {
+        result[id][locale] = detail;
+      }
+    }
+  }
+
+  return result;
+}
+
 function isCatalog(value: unknown): value is Catalog {
   if (!value || typeof value !== "object") {
     return false;
@@ -202,4 +246,28 @@ function isDifficulty(value: unknown): value is Difficulty {
 
 function isStatus(value: unknown): value is ChallengeStatus {
   return value === "runnable" || value === "planned";
+}
+
+function isChallengeDetail(value: unknown): value is ChallengeDetail {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const detail = value as Partial<ChallengeDetail>;
+  return (
+    typeof detail.background === "string" &&
+    typeof detail.objective === "string" &&
+    typeof detail.input_contract === "string" &&
+    typeof detail.output_contract === "string" &&
+    typeof detail.scoring === "string" &&
+    isPlainObject(detail.example_input) &&
+    isPlainObject(detail.example_output) &&
+    Array.isArray(detail.common_pitfalls) &&
+    detail.common_pitfalls.every((item) => typeof item === "string") &&
+    typeof detail.stretch_goal === "string"
+  );
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }

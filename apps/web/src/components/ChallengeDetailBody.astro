@@ -1,0 +1,131 @@
+---
+import type { Challenge } from "../lib/challenges";
+import type { Locale } from "../lib/i18n";
+
+const {
+  challenge,
+  lang = "en",
+  runCommand,
+} = Astro.props as {
+  challenge: Challenge;
+  lang?: Locale;
+  runCommand: string;
+};
+
+const copy = lang === "zh"
+  ? {
+      practiceSignal: "练习信号",
+      fallbackText: "在本地完成这道题，查看评分报告，然后逐步收紧智能体行为，直到它满足挑战契约。",
+      background: "题目背景",
+      objective: "任务目标",
+      input: "输入格式",
+      output: "输出格式",
+      scoring: "评分标准",
+      examples: "样例",
+      exampleInput: "样例输入",
+      exampleOutput: "样例输出",
+      pitfalls: "常见坑",
+      stretch: "进阶挑战",
+      runner: "本地 Runner",
+    }
+  : {
+      practiceSignal: "Practice Signal",
+      fallbackText:
+        "Solve this locally, inspect the grader report, then tighten the agent behavior until it satisfies the challenge contract.",
+      background: "Background",
+      objective: "Objective",
+      input: "Input Contract",
+      output: "Output Contract",
+      scoring: "Scoring",
+      examples: "Examples",
+      exampleInput: "Example Input",
+      exampleOutput: "Example Output",
+      pitfalls: "Common Pitfalls",
+      stretch: "Stretch Goal",
+      runner: "Local Runner",
+    };
+
+const detail = challenge.detail;
+const formatJson = (value: Record<string, unknown>) => JSON.stringify(value, null, 2);
+---
+
+{detail ? (
+  <>
+    <section class="section detail-grid">
+      <article class="detail-block">
+        <div class="section-kicker">{copy.background}</div>
+        <p>{detail.background}</p>
+      </article>
+      <article class="detail-block">
+        <div class="section-kicker">{copy.objective}</div>
+        <p>{detail.objective}</p>
+      </article>
+    </section>
+
+    <section class="section detail-section-grid">
+      <article class="detail-block">
+        <div class="section-kicker">{copy.input}</div>
+        <p>{detail.input_contract}</p>
+      </article>
+      <article class="detail-block">
+        <div class="section-kicker">{copy.output}</div>
+        <p>{detail.output_contract}</p>
+      </article>
+      <article class="detail-block">
+        <div class="section-kicker">{copy.scoring}</div>
+        <p>{detail.scoring}</p>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">{copy.examples}</div>
+          <h2>{challenge.title}</h2>
+        </div>
+      </div>
+      <div class="example-grid">
+        <article class="detail-block">
+          <h3>{copy.exampleInput}</h3>
+          <pre><code>{formatJson(detail.example_input)}</code></pre>
+        </article>
+        <article class="detail-block">
+          <h3>{copy.exampleOutput}</h3>
+          <pre><code>{formatJson(detail.example_output)}</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="section detail-grid">
+      <article class="detail-block">
+        <div class="section-kicker">{copy.pitfalls}</div>
+        <ul class="pitfall-list">
+          {detail.common_pitfalls.map((pitfall) => <li>{pitfall}</li>)}
+        </ul>
+      </article>
+      <article class="detail-block">
+        <div class="section-kicker">{copy.stretch}</div>
+        <p>{detail.stretch_goal}</p>
+      </article>
+    </section>
+
+    <section class="section">
+      <article class="detail-block">
+        <div class="section-kicker">{copy.runner}</div>
+        <pre><code>{runCommand}</code></pre>
+      </article>
+    </section>
+  </>
+) : (
+  <section class="section detail-grid">
+    <article class="detail-block">
+      <div class="section-kicker">{copy.practiceSignal}</div>
+      <h3>{challenge.focus}</h3>
+      <p>{copy.fallbackText}</p>
+    </article>
+    <article class="detail-block">
+      <div class="section-kicker">{copy.runner}</div>
+      <pre><code>{runCommand}</code></pre>
+    </article>
+  </section>
+)}

@@ -1,6 +1,8 @@
 ---
 import Layout from "../../components/Layout.astro";
-import { challenges } from "../../lib/challenges";
+import { challenges, runnableChallenges } from "../../lib/challenges";
+
+const planned = challenges.length - runnableChallenges.length;
 ---
 
 <Layout title="Agent Practice | Challenge Catalog">
@@ -20,26 +22,26 @@ import { challenges } from "../../lib/challenges";
         <span class="tag">medium</span>
         <span class="tag">hard</span>
         <span class="tag">expert</span>
-        <span class="tag">runnable</span>
-        <span class="tag">planned</span>
+        <span class="tag">{runnableChallenges.length} runnable</span>
+        <span class="tag">{planned} planned</span>
       </div>
-      <p class="footer-note">Dynamic filters can come later; for now this page is the stable source of challenge visibility.</p>
+      <p class="footer-note">This page is generated from <span class="mono">challenges/catalog.yaml</span>.</p>
     </div>
   </section>
 
   <section class="section">
     <div class="list-table">
       {challenges.map((challenge) => (
-        <div class="list-row">
+        <a class="list-row" href={challenge.href}>
           <span class="mono">{challenge.id}</span>
           <div>
             <strong>{challenge.title}</strong>
-            <span class="muted">{challenge.focus}</span>
+            <span class="muted">{challenge.summary}</span>
           </div>
           <span>{challenge.stage}</span>
           <span>{challenge.est}</span>
           <span class={`status ${challenge.status}`}>{challenge.status}</span>
-        </div>
+        </a>
       ))}
     </div>
   </section>

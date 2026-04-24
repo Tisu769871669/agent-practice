@@ -1,74 +1,208 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
+import { load } from "js-yaml";
+
+export type Difficulty = "easy" | "medium" | "hard" | "expert";
+export type ChallengeStatus = "runnable" | "planned";
+
 export type Challenge = {
   id: string;
   slug: string;
   title: string;
-  difficulty: "easy" | "medium" | "hard" | "expert";
-  status: "runnable" | "planned";
+  track: string;
   stage: string;
+  difficulty: Difficulty;
+  status: ChallengeStatus;
+  version: string;
+  summary: string;
+  tags: string[];
   focus: string;
   est: string;
+  href: string;
+  directory: string;
 };
 
-const runnableIds = new Set([
-  "001",
-  "002",
-  "003",
-  "004",
-  "005",
-  "006",
-  "008",
-  "010",
-  "013",
-  "017",
-]);
+export type Stage = {
+  track: string;
+  name: string;
+  note: string;
+  total: number;
+  runnable: number;
+};
 
-const rows: Array<Omit<Challenge, "status">> = [
-  { id: "001", slug: "echo-agent", title: "Echo Agent", difficulty: "easy", stage: "Foundations", focus: "Instruction following", est: "10m" },
-  { id: "002", slug: "json-only", title: "JSON Only", difficulty: "easy", stage: "Foundations", focus: "Structured output", est: "15m" },
-  { id: "003", slug: "tool-picker", title: "Tool Picker", difficulty: "easy", stage: "Tools", focus: "Tool selection", est: "20m" },
-  { id: "004", slug: "calculator-agent", title: "Calculator Agent", difficulty: "easy", stage: "Tools", focus: "Deterministic tools", est: "20m" },
-  { id: "005", slug: "ticket-triage", title: "Ticket Triage", difficulty: "easy", stage: "Foundations", focus: "Classification", est: "20m" },
-  { id: "006", slug: "mini-rag", title: "Mini RAG", difficulty: "medium", stage: "RAG", focus: "Retrieval + citations", est: "30m" },
-  { id: "007", slug: "context-window-diet", title: "Context Window Diet", difficulty: "medium", stage: "Memory", focus: "Compression", est: "25m" },
-  { id: "008", slug: "tool-error-recovery", title: "Tool Error Recovery", difficulty: "medium", stage: "Tools", focus: "Retry and degradation", est: "30m" },
-  { id: "009", slug: "personal-memory-lite", title: "Personal Memory Lite", difficulty: "medium", stage: "Memory", focus: "Preference memory", est: "30m" },
-  { id: "010", slug: "two-step-researcher", title: "Two-Step Researcher", difficulty: "medium", stage: "Workflow", focus: "Retrieve then answer", est: "35m" },
-  { id: "011", slug: "prompt-router", title: "Prompt Router", difficulty: "medium", stage: "Workflow", focus: "Routing", est: "25m" },
-  { id: "012", slug: "form-filler-agent", title: "Form Filler Agent", difficulty: "medium", stage: "Workflow", focus: "Clarifying questions", est: "25m" },
-  { id: "013", slug: "injection-guard-i", title: "Injection Guard I", difficulty: "medium", stage: "Safety", focus: "Prompt injection defense", est: "35m" },
-  { id: "014", slug: "unit-test-explainer", title: "Unit Test Explainer", difficulty: "medium", stage: "Workflow", focus: "Diagnostics", est: "30m" },
-  { id: "015", slug: "email-assistant-with-approval", title: "Email Assistant with Approval", difficulty: "medium", stage: "Human Loop", focus: "Approval gates", est: "35m" },
-  { id: "016", slug: "meeting-memory", title: "Meeting Memory", difficulty: "medium", stage: "Memory", focus: "Action extraction", est: "30m" },
-  { id: "017", slug: "eval-harness-basics", title: "Eval Harness Basics", difficulty: "medium", stage: "Evaluation", focus: "Deterministic grading", est: "40m" },
-  { id: "018", slug: "react-trace-auditor", title: "ReAct Trace Auditor", difficulty: "hard", stage: "Evaluation", focus: "Trace review", est: "45m" },
-  { id: "019", slug: "multi-tool-planner", title: "Multi-Tool Planner", difficulty: "hard", stage: "Workflow", focus: "Planning", est: "45m" },
-  { id: "020", slug: "rag-conflicting-sources", title: "RAG with Conflicting Sources", difficulty: "hard", stage: "RAG", focus: "Conflict handling", est: "45m" },
-  { id: "021", slug: "long-running-workflow", title: "Long-Running Workflow", difficulty: "hard", stage: "Workflow", focus: "Recoverability", est: "50m" },
-  { id: "022", slug: "memory-conflict-resolver", title: "Memory Conflict Resolver", difficulty: "hard", stage: "Memory", focus: "Conflict updates", est: "45m" },
-  { id: "023", slug: "human-escalation-agent", title: "Human Escalation Agent", difficulty: "hard", stage: "Human Loop", focus: "Risk escalation", est: "40m" },
-  { id: "024", slug: "regression-eval-suite", title: "Regression Eval Suite", difficulty: "hard", stage: "Evaluation", focus: "Regression sets", est: "45m" },
-  { id: "025", slug: "agent-judge-calibration", title: "Agent Judge Calibration", difficulty: "hard", stage: "Evaluation", focus: "LLM judge alignment", est: "50m" },
-  { id: "026", slug: "injection-guard-ii", title: "Injection Guard II", difficulty: "hard", stage: "Safety", focus: "Tool output isolation", est: "45m" },
-  { id: "027", slug: "multi-agent-handoff", title: "Multi-Agent Handoff", difficulty: "expert", stage: "Multi-Agent", focus: "Role handoff", est: "60m" },
-  { id: "028", slug: "budget-aware-agent", title: "Budget-Aware Agent", difficulty: "expert", stage: "Evaluation", focus: "Latency and cost routing", est: "60m" },
-  { id: "029", slug: "adversarial-rag-challenge", title: "Adversarial RAG Challenge", difficulty: "expert", stage: "Safety", focus: "Adversarial retrieval", est: "60m" },
-  { id: "030", slug: "capstone-support-agent", title: "Capstone Support Agent", difficulty: "expert", stage: "Capstone", focus: "End-to-end support agent", est: "90m" },
+type Catalog = {
+  schema_version: string;
+  challenges: CatalogEntry[];
+};
+
+type CatalogEntry = {
+  id: string;
+  slug: string;
+  title: string;
+  track: string;
+  difficulty: Difficulty;
+  status: ChallengeStatus;
+  version: string;
+  summary: string;
+  tags: string[];
+};
+
+const catalogPath = fileURLToPath(
+  new URL("../../../../challenges/catalog.yaml", import.meta.url),
+);
+
+const stageNotes: Record<string, { name: string; note: string }> = {
+  foundations: {
+    name: "Foundations",
+    note: "Instruction following, structured output, deterministic behavior.",
+  },
+  tools: {
+    name: "Tools",
+    note: "Tool choice, parameters, retries, bounded execution.",
+  },
+  rag: {
+    name: "RAG",
+    note: "Citations, source faithfulness, conflicting evidence.",
+  },
+  memory: {
+    name: "Memory",
+    note: "State compression, preferences, conflict handling.",
+  },
+  workflow: {
+    name: "Workflow",
+    note: "Routing, staged execution, recoverability.",
+  },
+  safety: {
+    name: "Safety",
+    note: "Prompt injection resistance and trust boundaries.",
+  },
+  evaluation: {
+    name: "Evaluation",
+    note: "Graders, regression suites, trace inspection.",
+  },
+  capstone: {
+    name: "Capstone",
+    note: "Integrated agent systems with realistic constraints.",
+  },
+};
+
+const stageOrder = [
+  "foundations",
+  "tools",
+  "rag",
+  "memory",
+  "workflow",
+  "safety",
+  "evaluation",
+  "capstone",
 ];
 
-export const challenges: Challenge[] = rows.map((row) => ({
-  ...row,
-  status: runnableIds.has(row.id) ? "runnable" : "planned",
-}));
+const estimatesByDifficulty: Record<Difficulty, string> = {
+  easy: "15-20m",
+  medium: "30-40m",
+  hard: "45-60m",
+  expert: "60-90m",
+};
 
-export const stages = [
-  { name: "Foundations", note: "Instruction following, structured output, deterministic behavior." },
-  { name: "Tools", note: "Tool choice, parameters, retries, bounded execution." },
-  { name: "RAG", note: "Citations, source faithfulness, conflicting evidence." },
-  { name: "Memory", note: "State compression, preferences, conflict handling." },
-  { name: "Workflow", note: "Routing, staged execution, recoverability." },
-  { name: "Safety", note: "Prompt injection resistance and trust boundaries." },
-  { name: "Evaluation", note: "Graders, regression suites, trace inspection." },
-  { name: "Capstone", note: "Integrated agent systems with realistic constraints." },
-];
+const catalog = loadCatalog();
 
-export const runnableChallenges = challenges.filter((challenge) => challenge.status === "runnable");
+export const challenges: Challenge[] = catalog.challenges.map((entry) => {
+  const stage = stageNotes[entry.track] ?? {
+    name: toTitleCase(entry.track),
+    note: "Practice track.",
+  };
+
+  return {
+    ...entry,
+    stage: stage.name,
+    focus: entry.tags.map(formatTag).join(" / "),
+    est: estimatesByDifficulty[entry.difficulty],
+    href: `/challenges/${entry.slug}`,
+    directory: `challenges/${entry.id}-${entry.slug}`,
+  };
+});
+
+export const runnableChallenges = challenges.filter(
+  (challenge) => challenge.status === "runnable",
+);
+
+export const stages: Stage[] = stageOrder.map((track) => {
+  const stage = stageNotes[track];
+  const trackChallenges = challenges.filter((challenge) => challenge.track === track);
+
+  return {
+    track,
+    name: stage.name,
+    note: stage.note,
+    total: trackChallenges.length,
+    runnable: trackChallenges.filter((challenge) => challenge.status === "runnable")
+      .length,
+  };
+});
+
+export function getChallengeBySlug(slug: string): Challenge | undefined {
+  return challenges.find((challenge) => challenge.slug === slug);
+}
+
+function loadCatalog(): Catalog {
+  const raw = load(readFileSync(catalogPath, "utf-8"));
+
+  if (!isCatalog(raw)) {
+    throw new Error(`Invalid challenge catalog: ${catalogPath}`);
+  }
+
+  return raw;
+}
+
+function isCatalog(value: unknown): value is Catalog {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<Catalog>;
+  return (
+    typeof candidate.schema_version === "string" &&
+    Array.isArray(candidate.challenges) &&
+    candidate.challenges.every(isCatalogEntry)
+  );
+}
+
+function isCatalogEntry(value: unknown): value is CatalogEntry {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const entry = value as Partial<CatalogEntry>;
+  return (
+    typeof entry.id === "string" &&
+    typeof entry.slug === "string" &&
+    typeof entry.title === "string" &&
+    typeof entry.track === "string" &&
+    isDifficulty(entry.difficulty) &&
+    isStatus(entry.status) &&
+    typeof entry.version === "string" &&
+    typeof entry.summary === "string" &&
+    Array.isArray(entry.tags) &&
+    entry.tags.every((tag) => typeof tag === "string")
+  );
+}
+
+function isDifficulty(value: unknown): value is Difficulty {
+  return value === "easy" || value === "medium" || value === "hard" || value === "expert";
+}
+
+function isStatus(value: unknown): value is ChallengeStatus {
+  return value === "runnable" || value === "planned";
+}
+
+function formatTag(value: string): string {
+  return value
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function toTitleCase(value: string): string {
+  return formatTag(value);
+}

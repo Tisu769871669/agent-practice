@@ -1,0 +1,57 @@
+---
+import Layout from "../../components/Layout.astro";
+import { challenges, type Challenge } from "../../lib/challenges";
+
+export function getStaticPaths() {
+  return challenges.map((challenge) => ({
+    params: { slug: challenge.slug },
+    props: { challenge },
+  }));
+}
+
+const { challenge } = Astro.props as { challenge: Challenge };
+const runCommand = `$env:PYTHONPATH = "runner"
+python -m agent_practice_runner.cli run ${challenge.id} --submission path/to/submission --challenges-dir challenges`;
+---
+
+<Layout title={`Agent Practice | ${challenge.title}`}>
+  <section class="challenge-detail-hero">
+    <div>
+      <div class="section-kicker">Challenge {challenge.id}</div>
+      <h2>{challenge.title}</h2>
+      <p>{challenge.summary}</p>
+      <div class="chip-row">
+        <span class={`status ${challenge.status}`}>{challenge.status}</span>
+        <span class="tag">{challenge.stage}</span>
+        <span class="tag">{challenge.difficulty}</span>
+        <span class="tag">{challenge.est}</span>
+      </div>
+    </div>
+    <aside class="panel detail-panel">
+      <div class="section-kicker">Repository Path</div>
+      <p class="mono">{challenge.directory}</p>
+      <div class="tag-row">
+        {challenge.tags.map((tag) => <span class="tag compact">{tag}</span>)}
+      </div>
+    </aside>
+  </section>
+
+  <section class="section detail-grid">
+    <article class="detail-block">
+      <div class="section-kicker">Practice Signal</div>
+      <h3>{challenge.focus}</h3>
+      <p>
+        Solve this locally, inspect the grader report, then tighten the agent behavior until it satisfies the challenge
+        contract.
+      </p>
+    </article>
+    <article class="detail-block">
+      <div class="section-kicker">Local Runner</div>
+      <pre><code>{runCommand}</code></pre>
+    </article>
+  </section>
+
+  <section class="section">
+    <a class="ghost-button" href="/challenges">Back to catalog</a>
+  </section>
+</Layout>

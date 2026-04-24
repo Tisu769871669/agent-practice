@@ -6,6 +6,7 @@ import { challenges, runnableChallenges, stages } from "../lib/challenges";
 
 const total = challenges.length;
 const runnable = runnableChallenges.length;
+const stageCount = stages.length;
 ---
 
 <Layout title="Agent Practice | Open-source agent training lab">
@@ -35,7 +36,7 @@ const runnable = runnableChallenges.length;
           <span class="muted">launch runnable</span>
         </div>
         <div class="stat-card">
-          <strong>8</strong>
+          <strong>{stageCount}</strong>
           <span class="muted">learning stages</span>
         </div>
         <div class="stat-card">

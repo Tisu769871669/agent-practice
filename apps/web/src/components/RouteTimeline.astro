@@ -1,5 +1,7 @@
 ---
-const { stages } = Astro.props as { stages: Array<{ name: string; note: string }> };
+import type { Stage } from "../lib/challenges";
+
+const { stages } = Astro.props as { stages: Stage[] };
 ---
 
 <section class="timeline">
@@ -9,6 +11,10 @@ const { stages } = Astro.props as { stages: Array<{ name: string; note: string }
       <div>
         <h3>{stage.name}</h3>
         <p>{stage.note}</p>
+        <div class="timeline-metrics">
+          <span>{stage.total} tasks</span>
+          <span>{stage.runnable} live</span>
+        </div>
       </div>
     </div>
   ))}

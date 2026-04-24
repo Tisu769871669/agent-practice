@@ -4,16 +4,19 @@ import type { Challenge } from "../lib/challenges";
 const { challenge } = Astro.props as { challenge: Challenge };
 ---
 
-<article class={`challenge-card ${challenge.status}`}>
+<a class={`challenge-card ${challenge.status}`} href={challenge.href}>
   <div class="card-top">
     <span class="mono">{challenge.id}</span>
     <span class={`status ${challenge.status}`}>{challenge.status}</span>
   </div>
   <h3>{challenge.title}</h3>
-  <p>{challenge.focus}</p>
+  <p>{challenge.summary}</p>
+  <div class="tag-row">
+    {challenge.tags.slice(0, 3).map((tag) => <span class="tag compact">{tag}</span>)}
+  </div>
   <div class="meta-row">
     <span>{challenge.stage}</span>
     <span>{challenge.difficulty}</span>
     <span>{challenge.est}</span>
   </div>
-</article>
+</a>

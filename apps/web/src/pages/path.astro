@@ -31,16 +31,16 @@ import { challenges, stages } from "../lib/challenges";
     </div>
     <div class="list-table">
       {challenges.map((challenge) => (
-        <div class="list-row">
+        <a class="list-row" href={challenge.href}>
           <span class="mono">{challenge.id}</span>
           <div>
             <strong>{challenge.title}</strong>
-            <span class="muted">{challenge.focus}</span>
+            <span class="muted">{challenge.summary}</span>
           </div>
           <span>{challenge.stage}</span>
           <span class={`status ${challenge.status}`}>{challenge.status}</span>
           <span>{challenge.difficulty}</span>
-        </div>
+        </a>
       ))}
     </div>
   </section>

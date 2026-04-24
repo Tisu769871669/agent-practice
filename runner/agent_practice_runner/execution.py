@@ -15,6 +15,9 @@ from agent_practice_runner.schemas import ChallengeConfig, SubmissionConfig
 from agent_practice_runner.transcript import TranscriptWriter
 
 
+_ISOLATED_MODULE_NAMES: set[str] = set()
+
+
 @dataclass
 class CaseRun:
     case_id: str
@@ -69,14 +72,12 @@ def run_cases(
 
         try:
             output = run_callable(input_payload, context)
-        except Exception as exc:  # noqa: BLE001 - runner isolates case failures.
             duration_ms = _elapsed_ms(start)
-            error = f"{type(exc).__name__}: {exc}"
             writer.write_event(
                 {
-                    "type": "error",
+                    "type": "agent_output",
                     "case_id": case_id,
-                    "error": error,
+                    "payload": {"output": output},
                     "duration_ms": duration_ms,
                 }
             )
@@ -84,7 +85,6 @@ def run_cases(
                 {
                     "type": "case_end",
                     "case_id": case_id,
-                    "error": error,
                     "duration_ms": duration_ms,
                 }
             )
@@ -92,42 +92,25 @@ def run_cases(
                 CaseRun(
                     case_id=case_id,
                     input=input_payload,
-                    output=None,
-                    passed=False,
+                    output=output,
+                    passed=True,
                     duration_ms=duration_ms,
-                    error=error,
+                    error=None,
                     fixture=fixture,
                 )
             )
-            continue
-
-        duration_ms = _elapsed_ms(start)
-        writer.write_event(
-            {
-                "type": "agent_output",
-                "case_id": case_id,
-                "payload": {"output": output},
-                "duration_ms": duration_ms,
-            }
-        )
-        writer.write_event(
-            {
-                "type": "case_end",
-                "case_id": case_id,
-                "duration_ms": duration_ms,
-            }
-        )
-        case_runs.append(
-            CaseRun(
-                case_id=case_id,
-                input=input_payload,
-                output=output,
-                passed=True,
-                duration_ms=duration_ms,
-                error=None,
-                fixture=fixture,
+        except Exception as exc:  # noqa: BLE001 - runner isolates case failures.
+            duration_ms = _elapsed_ms(start)
+            case_runs.append(
+                _record_case_failure(
+                    writer=writer,
+                    case_id=case_id,
+                    input_payload=input_payload,
+                    fixture=fixture,
+                    duration_ms=duration_ms,
+                    exc=exc,
+                )
             )
-        )
 
     return case_runs
 
@@ -138,10 +121,13 @@ def _load_entrypoint(
     callable_name: str,
     import_root: Path,
 ) -> Callable[[dict[str, Any], AgentContext], Any]:
+    _purge_isolated_modules()
     with _prepend_sys_path(import_root):
         importlib.invalidate_caches()
         _purge_module(module_name)
+        before_import = set(sys.modules)
         module = importlib.import_module(module_name)
+        _remember_modules_loaded_from(import_root, before_import)
 
     entrypoint = getattr(module, callable_name)
     if not callable(entrypoint):
@@ -179,6 +165,43 @@ def _elapsed_ms(start: float) -> int:
     return max(0, int((time.perf_counter() - start) * 1000))
 
 
+def _record_case_failure(
+    *,
+    writer: TranscriptWriter,
+    case_id: str,
+    input_payload: dict[str, Any],
+    fixture: dict[str, Any],
+    duration_ms: int,
+    exc: Exception,
+) -> CaseRun:
+    error = f"{type(exc).__name__}: {exc}"
+    writer.write_event(
+        {
+            "type": "error",
+            "case_id": case_id,
+            "error": error,
+            "duration_ms": duration_ms,
+        }
+    )
+    writer.write_event(
+        {
+            "type": "case_end",
+            "case_id": case_id,
+            "error": error,
+            "duration_ms": duration_ms,
+        }
+    )
+    return CaseRun(
+        case_id=case_id,
+        input=input_payload,
+        output=None,
+        passed=False,
+        duration_ms=duration_ms,
+        error=error,
+        fixture=fixture,
+    )
+
+
 def _purge_module(module_name: str) -> None:
     parts = module_name.split(".")
     for index in range(1, len(parts) + 1):
@@ -186,6 +209,30 @@ def _purge_module(module_name: str) -> None:
     for loaded_name in list(sys.modules):
         if loaded_name.startswith(f"{module_name}."):
             sys.modules.pop(loaded_name, None)
+
+
+def _purge_isolated_modules() -> None:
+    for module_name in list(_ISOLATED_MODULE_NAMES):
+        sys.modules.pop(module_name, None)
+
+
+def _remember_modules_loaded_from(import_root: str | Path, before_import: set[str]) -> None:
+    root = Path(import_root).resolve()
+    for module_name, module in list(sys.modules.items()):
+        if module_name in before_import:
+            continue
+        module_file = getattr(module, "__file__", None)
+        if module_file and _is_relative_to(Path(module_file), root):
+            _ISOLATED_MODULE_NAMES.add(module_name)
+            sys.modules.pop(module_name, None)
+
+
+def _is_relative_to(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root)
+        return True
+    except ValueError:
+        return False
 
 
 @contextmanager

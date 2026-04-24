@@ -205,6 +205,123 @@ def run(input, context):
     )
 
 
+def test_run_cases_isolates_submission_helper_imports_between_runs(
+    tmp_path: Path,
+) -> None:
+    challenge_dir = tmp_path / "challenge"
+    write_jsonl(
+        challenge_dir / "fixtures" / "public.jsonl",
+        [{"case_id": "public-001", "input": {}}],
+    )
+    challenge = ChallengeConfig.model_validate(minimal_challenge_config())
+    submission = SubmissionConfig.model_validate(minimal_submission_config())
+
+    first_submission_path = write_submission_module(
+        tmp_path / "submission-a",
+        """
+from shared_submission_helper import VALUE
+
+
+def run(input, context):
+    return {"value": VALUE}
+""".strip(),
+    )
+    (tmp_path / "submission-a" / "shared_submission_helper.py").write_text(
+        "VALUE = 'first'\n",
+        encoding="utf-8",
+    )
+    second_submission_path = write_submission_module(
+        tmp_path / "submission-b",
+        """
+from shared_submission_helper import VALUE
+
+
+def run(input, context):
+    return {"value": VALUE}
+""".strip(),
+    )
+    (tmp_path / "submission-b" / "shared_submission_helper.py").write_text(
+        "VALUE = 'second'\n",
+        encoding="utf-8",
+    )
+
+    first_runs = run_cases(
+        challenge_dir=challenge_dir,
+        challenge=challenge,
+        submission=submission,
+        submission_path=first_submission_path,
+        transcript_path=tmp_path / "first-transcript.jsonl",
+    )
+    second_runs = run_cases(
+        challenge_dir=challenge_dir,
+        challenge=challenge,
+        submission=submission,
+        submission_path=second_submission_path,
+        transcript_path=tmp_path / "second-transcript.jsonl",
+    )
+
+    assert [case_run.output for case_run in first_runs] == [{"value": "first"}]
+    assert [case_run.output for case_run in second_runs] == [{"value": "second"}]
+    assert "shared_submission_helper" not in sys.modules
+
+
+def test_run_cases_records_unserializable_output_as_case_failure(
+    tmp_path: Path,
+) -> None:
+    challenge_dir = tmp_path / "challenge"
+    write_jsonl(
+        challenge_dir / "fixtures" / "public.jsonl",
+        [
+            {"case_id": "public-001", "input": {"mode": "ok"}},
+            {"case_id": "public-002", "input": {"mode": "bad"}},
+            {"case_id": "public-003", "input": {"mode": "after"}},
+        ],
+    )
+    submission_path = write_submission_module(
+        tmp_path / "submission",
+        """
+def run(input, context):
+    if input["mode"] == "bad":
+        return object()
+    return {"mode": input["mode"]}
+""".strip(),
+    )
+    transcript_path = tmp_path / "transcript.jsonl"
+
+    case_runs = run_cases(
+        challenge_dir=challenge_dir,
+        challenge=ChallengeConfig.model_validate(minimal_challenge_config()),
+        submission=SubmissionConfig.model_validate(minimal_submission_config()),
+        submission_path=submission_path,
+        transcript_path=transcript_path,
+    )
+
+    assert [case_run.case_id for case_run in case_runs] == [
+        "public-001",
+        "public-002",
+        "public-003",
+    ]
+    assert [case_run.passed for case_run in case_runs] == [True, False, True]
+    assert case_runs[1].output is None
+    assert case_runs[1].error
+
+    transcript_events = [
+        json.loads(line)
+        for line in transcript_path.read_text(encoding="utf-8").splitlines()
+    ]
+    public_002_events = [
+        event["type"]
+        for event in transcript_events
+        if event.get("case_id") == "public-002"
+    ]
+    assert "error" in public_002_events
+    assert "case_end" in public_002_events
+    assert any(
+        event["type"] == "agent_output" and event.get("case_id") == "public-003"
+        for event in transcript_events
+    )
+
+
 def test_grade_cases_loads_challenge_grader_and_validates_report(
     tmp_path: Path,
 ) -> None:
@@ -289,3 +406,36 @@ def test_load_grader_requires_callable_grade(tmp_path: Path) -> None:
 
     with pytest.raises(AttributeError, match="must expose callable grade"):
         load_grader(challenge_dir)
+
+
+def test_load_grader_isolates_helper_imports_between_challenges(
+    tmp_path: Path,
+) -> None:
+    challenge = ChallengeConfig.model_validate(minimal_challenge_config())
+
+    for name, value in (("challenge-a", "first"), ("challenge-b", "second")):
+        challenge_dir = tmp_path / name
+        challenge_dir.mkdir()
+        (challenge_dir / "shared_grader_helper.py").write_text(
+            f"VALUE = {value!r}\n",
+            encoding="utf-8",
+        )
+        (challenge_dir / "grader.py").write_text(
+            """
+from shared_grader_helper import VALUE
+
+
+def grade(case_runs, transcript_path, challenge):
+    return {"value": VALUE}
+""".strip(),
+            encoding="utf-8",
+        )
+
+    first_grade = load_grader(tmp_path / "challenge-a")
+    second_grade = load_grader(tmp_path / "challenge-b")
+
+    assert first_grade([], tmp_path / "first.jsonl", challenge) == {"value": "first"}
+    assert second_grade([], tmp_path / "second.jsonl", challenge) == {
+        "value": "second"
+    }
+    assert "shared_grader_helper" not in sys.modules

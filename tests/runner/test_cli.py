@@ -176,7 +176,7 @@ def test_run_command_exits_zero_for_passing_submission_and_writes_artifacts(
     )
 
     assert result.exit_code == 0, result.output
-    assert "PASS 001" in result.output
+    assert "ACCEPTED 001" in result.output
     run_dirs = list((runs_dir / "001").iterdir())
     assert len(run_dirs) == 1
     result_path = run_dirs[0] / "result.json"
@@ -187,6 +187,8 @@ def test_run_command_exits_zero_for_passing_submission_and_writes_artifacts(
 
     report = json.loads(result_path.read_text(encoding="utf-8"))
     assert report["passed"] is True
+    assert report["verdict"] == "accepted"
+    assert report["gates"]
     assert report["score"] == 100
 
 

@@ -90,6 +90,8 @@ Public fixtures should be JSONL, deterministic, small enough for local execution
 
 `grader.py` should score local case runs deterministically and return the shared result report. It should validate schema compliance, core task behavior, and any documented efficiency or safety constraints. Do not add LLM-as-judge behavior for MVP runnable challenges.
 
+Graders should follow APS-1 in `docs/grading-policy.md`: keep `passed` as the score-threshold boolean, and let the runner derive `verdict`, `gates`, and basic `failure_reasons`. If a grader can produce more specific feedback, put it in metric `feedback` or the case `error` field so learners can understand the failed check.
+
 ## Status vocabulary
 
 - `planned`: visible on the route, not runnable yet.

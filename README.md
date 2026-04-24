@@ -9,7 +9,7 @@ Think of it as a LeetCode-style training lab for agents: browse the route on a s
 - Static Astro website with a learning path, catalog, and 30 generated challenge detail pages.
 - 30-challenge roadmap from foundations to capstone agent systems.
 - 10 runnable launch challenges with rich bilingual statements, fixtures, JSON schemas, deterministic graders, and READMEs.
-- Local Python runner that writes `result.json` and `transcript.jsonl`.
+- Local Python runner that writes APS-1 `result.json` reports and `transcript.jsonl`.
 - Starter templates for raw Python, LangChain, and LangGraph.
 - Framework-neutral submission contract: `run(input: dict, context: AgentContext) -> dict`.
 
@@ -91,3 +91,7 @@ The first release includes these runnable challenges:
 - `017` Eval Harness Basics
 
 The other 20 catalog entries are planned so contributors can see the route ahead.
+
+## Scoring standard
+
+Agent Practice uses APS-1 for local judging. A run is accepted when all gates pass and the challenge score meets the pass threshold. `result.json` includes a top-level `verdict`, gate results, metrics, case-level verdicts, and structured failure reasons so learners can see whether they hit a schema error, wrong answer, partial pass, runtime error, timeout, or safety violation.

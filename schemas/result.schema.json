@@ -13,6 +13,9 @@
     "score",
     "max_score",
     "passed",
+    "verdict",
+    "gates",
+    "failure_reasons",
     "duration_ms",
     "metrics",
     "cases",
@@ -53,6 +56,21 @@
     "passed": {
       "type": "boolean"
     },
+    "verdict": {
+      "$ref": "#/$defs/verdict"
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/gate"
+      }
+    },
+    "failure_reasons": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/failure_reason"
+      }
+    },
     "duration_ms": {
       "type": "integer",
       "minimum": 0
@@ -77,6 +95,53 @@
     }
   },
   "$defs": {
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "wrong_answer",
+        "schema_error",
+        "timeout",
+        "runtime_error",
+        "safety_violation",
+        "partial_pass"
+      ]
+    },
+    "failure_reason": {
+      "type": "object",
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "metric": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "gate": {
+      "type": "object",
+      "required": ["name", "passed"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": true
+    },
     "metric": {
       "type": "object",
       "required": ["name", "score", "max_score", "passed"],
@@ -104,7 +169,15 @@
     },
     "case": {
       "type": "object",
-      "required": ["case_id", "score", "max_score", "passed", "duration_ms"],
+      "required": [
+        "case_id",
+        "score",
+        "max_score",
+        "passed",
+        "duration_ms",
+        "verdict",
+        "failure_reasons"
+      ],
       "properties": {
         "case_id": {
           "type": "string",
@@ -120,6 +193,15 @@
         },
         "passed": {
           "type": "boolean"
+        },
+        "verdict": {
+          "$ref": "#/$defs/verdict"
+        },
+        "failure_reasons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/failure_reason"
+          }
         },
         "duration_ms": {
           "type": "integer",

@@ -25,7 +25,7 @@ def write_result(report: GradeReport | Mapping[str, Any], path: str | Path) -> G
 
 def summarize_result(report: GradeReport | Mapping[str, Any]) -> str:
     validated_report = _validate_report(report)
-    status = "PASS" if validated_report.passed else "FAIL"
+    status = validated_report.verdict.upper()
     return (
         f"{status} {validated_report.challenge_id} "
         f"score={validated_report.score:g}/{validated_report.max_score:g} "

@@ -22,7 +22,7 @@ The MVP does not include user accounts, online submissions, hosted sandboxes, pa
 5. The runner loads the configured `run(input: dict, context: AgentContext) -> dict` entrypoint.
 6. Each public fixture case runs locally.
 7. The runner records transcript events.
-8. The challenge grader returns a deterministic score report.
+8. The challenge grader returns a deterministic APS-1 score report.
 9. The runner writes `result.json` and `transcript.jsonl` under `runs/<challenge_id>/<timestamp>/`.
 
 ## Repository layout
@@ -58,7 +58,7 @@ def run(input: dict, context: AgentContext) -> dict:
 
 Every local run writes:
 
-- `result.json`: score, pass/fail status, metrics, case results, duration, and artifact paths.
+- `result.json`: APS-1 verdict, gates, score, metrics, case results, failure reasons, duration, and artifact paths.
 - `transcript.jsonl`: one JSON event per line for case starts, tool calls, tool results, agent outputs, case ends, and errors.
 
 These artifacts are local files in the MVP. Hosted result storage and leaderboard aggregation are future-stage capabilities, not MVP features.

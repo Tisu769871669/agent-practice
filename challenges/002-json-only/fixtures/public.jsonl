@@ -1,0 +1,3 @@
+{"case_id":"public-001","input":{"request":"Create a high priority task titled \"Patch staging database\" due on 2026-05-03."},"expected":{"title":"Patch staging database","priority":"high","due_date":"2026-05-03"}}
+{"case_id":"public-002","input":{"request":"Log a medium priority task titled \"Review onboarding checklist\". No due date is provided."},"expected":{"title":"Review onboarding checklist","priority":"medium","due_date":null}}
+{"case_id":"public-003","input":{"request":"Add low priority task \"Archive Q1 notes\" due on 2026-06-15."},"expected":{"title":"Archive Q1 notes","priority":"low","due_date":"2026-06-15"}}

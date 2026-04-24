@@ -48,6 +48,17 @@ python -m pytest -q
 npm run web:build
 ```
 
+## Publish on GitHub
+
+This repository is ready for GitHub-hosted collaboration:
+
+- `.github/workflows/ci.yml` runs Python tests and the Astro build on pull requests and pushes.
+- `.github/workflows/pages.yml` builds `apps/web` and deploys `apps/web/dist` to GitHub Pages on `main`.
+
+After pushing the repository, open GitHub repository settings and set Pages to deploy from GitHub Actions. Then merge or push to `main`; the Pages workflow will publish the static site.
+
+The Pages workflow sets `PUBLIC_BASE_PATH` to the repository name so project pages work at URLs like `https://<owner>.github.io/<repo>/`. If you deploy with a custom domain or a root `owner.github.io` repository, set `PUBLIC_BASE_PATH` to `/` in `.github/workflows/pages.yml`.
+
 ## Repository layout
 
 ```text

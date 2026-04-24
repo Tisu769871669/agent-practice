@@ -3,6 +3,8 @@ import { fileURLToPath } from "node:url";
 
 import { load } from "js-yaml";
 
+import { sitePath } from "./urls";
+
 export type Difficulty = "easy" | "medium" | "hard" | "expert";
 export type ChallengeStatus = "runnable" | "planned";
 
@@ -118,7 +120,7 @@ export const challenges: Challenge[] = catalog.challenges.map((entry) => {
     stage: stage.name,
     focus: entry.tags.map(formatTag).join(" / "),
     est: estimatesByDifficulty[entry.difficulty],
-    href: `/challenges/${entry.slug}`,
+    href: sitePath(`/challenges/${entry.slug}`),
     directory: `challenges/${entry.id}-${entry.slug}`,
   };
 });

@@ -3,6 +3,7 @@ import Layout from "../components/Layout.astro";
 import ChallengeCard from "../components/ChallengeCard.astro";
 import RouteTimeline from "../components/RouteTimeline.astro";
 import { challenges, runnableChallenges, stages } from "../lib/challenges";
+import { sitePath } from "../lib/urls";
 
 const total = challenges.length;
 const runnable = runnableChallenges.length;
@@ -19,7 +20,7 @@ const stageCount = stages.length;
         repo, solve locally with any framework, and inspect deterministic feedback from a runner and grader.
       </p>
       <div class="actions">
-        <a class="button" href="/path">Start the Path</a>
+        <a class="button" href={sitePath("/path")}>Start the Path</a>
         <a class="ghost-button" href="https://github.com/" target="_blank" rel="noreferrer">Clone on GitHub</a>
       </div>
     </div>
@@ -56,7 +57,7 @@ const stageCount = stages.length;
         <div class="section-kicker">Learning Route</div>
         <h2>Foundations to Capstone</h2>
       </div>
-      <a class="ghost-button" href="/path">View full path</a>
+      <a class="ghost-button" href={sitePath("/path")}>View full path</a>
     </div>
     <RouteTimeline stages={stages} />
   </section>
@@ -67,7 +68,7 @@ const stageCount = stages.length;
         <div class="section-kicker">Runnable Launch Set</div>
         <h2>Ten challenges you can start with</h2>
       </div>
-      <a class="ghost-button" href="/challenges">Browse catalog</a>
+      <a class="ghost-button" href={sitePath("/challenges")}>Browse catalog</a>
     </div>
     <div class="challenge-grid">
       {runnableChallenges.map((challenge) => <ChallengeCard challenge={challenge} />)}

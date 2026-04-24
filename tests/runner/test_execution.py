@@ -2,6 +2,7 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
 import yaml
 
 
@@ -9,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "runner"))
 
 from agent_practice_runner.execution import run_cases  # noqa: E402
-from agent_practice_runner.grading import grade_cases  # noqa: E402
+from agent_practice_runner.grading import grade_cases, load_grader  # noqa: E402
 from agent_practice_runner.schemas import (  # noqa: E402
     ChallengeConfig,
     GradeReport,
@@ -276,3 +277,15 @@ def run(input, context):
     assert isinstance(report, GradeReport)
     assert report.challenge_id == "001"
     assert report.passed is True
+
+
+def test_load_grader_requires_callable_grade(tmp_path: Path) -> None:
+    challenge_dir = tmp_path / "challenge"
+    challenge_dir.mkdir()
+    (challenge_dir / "grader.py").write_text(
+        "not_grade = 'missing callable'\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(AttributeError, match="must expose callable grade"):
+        load_grader(challenge_dir)

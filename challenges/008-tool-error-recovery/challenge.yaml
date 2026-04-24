@@ -1,0 +1,40 @@
+id: "008"
+slug: "tool-error-recovery"
+title: "Tool Error Recovery"
+track: "tools"
+difficulty: "medium"
+status: "runnable"
+version: "0.1.0"
+summary: "Recover from tool errors and empty results."
+tags:
+  - tools
+  - retries
+frameworks:
+  official:
+    - raw-python
+    - langchain
+    - langgraph
+  interface: "framework-neutral"
+entrypoint:
+  module: "solution.agent"
+  callable: "run"
+  signature: "run(input: dict, context: AgentContext) -> dict"
+schemas:
+  input: "schemas/input.schema.json"
+  output: "schemas/output.schema.json"
+fixtures:
+  public: "fixtures/public.jsonl"
+limits:
+  timeout_seconds: 60
+  max_tool_calls: 0
+  max_output_chars: 2000
+scoring:
+  max_score: 100
+  pass_score: 90
+  metrics:
+    - name: "schema_validity"
+      weight: 20
+    - name: "final_status"
+      weight: 40
+    - name: "recovery_action"
+      weight: 40

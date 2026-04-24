@@ -1,0 +1,40 @@
+id: "006"
+slug: "mini-rag"
+title: "Mini RAG"
+track: "rag"
+difficulty: "medium"
+status: "runnable"
+version: "0.1.0"
+summary: "Answer from a small document set with citations."
+tags:
+  - rag
+  - citations
+frameworks:
+  official:
+    - raw-python
+    - langchain
+    - langgraph
+  interface: "framework-neutral"
+entrypoint:
+  module: "solution.agent"
+  callable: "run"
+  signature: "run(input: dict, context: AgentContext) -> dict"
+schemas:
+  input: "schemas/input.schema.json"
+  output: "schemas/output.schema.json"
+fixtures:
+  public: "fixtures/public.jsonl"
+limits:
+  timeout_seconds: 60
+  max_tool_calls: 0
+  max_output_chars: 3000
+scoring:
+  max_score: 100
+  pass_score: 80
+  metrics:
+    - name: "schema_validity"
+      weight: 20
+    - name: "answer_keywords"
+      weight: 40
+    - name: "citation_ids"
+      weight: 40

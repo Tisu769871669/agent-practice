@@ -1,0 +1,4 @@
+{"case_id":"public-001","input":{"question":"Compute (18 + 7) * 4."},"expected":{"expression":"(18 + 7) * 4","result":100}}
+{"case_id":"public-002","input":{"question":"A team has 96 open tickets, closes 35, then receives 12 new tickets. How many are open?"},"expected":{"expression":"96 - 35 + 12","result":73}}
+{"case_id":"public-003","input":{"question":"What is 15 percent of 260 plus 8?"},"expected":{"expression":"260 * 0.15 + 8","result":47}}
+{"case_id":"public-004","input":{"question":"Split 144 by 12 and subtract 3."},"expected":{"expression":"144 / 12 - 3","result":9}}

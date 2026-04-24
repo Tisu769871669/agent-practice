@@ -15,10 +15,6 @@ from agent_practice_runner.schemas import ChallengeConfig  # noqa: E402
 
 CATALOG_PATH = ROOT / "challenges" / "catalog.yaml"
 RUNNABLE_IDS = {"001", "002", "003", "004", "005", "006", "008", "010", "013", "017"}
-FIRST_RUNNABLE_DIRS = [
-    ROOT / "challenges" / "001-echo-agent",
-    ROOT / "challenges" / "002-json-only",
-]
 REQUIRED_CHALLENGE_FILES = [
     "challenge.yaml",
     "README.md",
@@ -39,16 +35,22 @@ def load_catalog() -> list[dict]:
     return entries
 
 
+def runnable_entries() -> list[dict]:
+    return [
+        entry for entry in load_catalog() if entry.get("status") == "runnable"
+    ]
+
+
+def challenge_path(entry: dict) -> Path:
+    return ROOT / "challenges" / f"{entry['id']}-{entry['slug']}"
+
+
 def test_catalog_contains_30_entries() -> None:
     assert len(load_catalog()) == 30
 
 
 def test_catalog_has_exactly_10_runnable_entries() -> None:
-    runnable_entries = [
-        entry for entry in load_catalog() if entry.get("status") == "runnable"
-    ]
-
-    assert len(runnable_entries) == 10
+    assert len(runnable_entries()) == 10
 
 
 def test_catalog_challenge_ids_are_unique() -> None:
@@ -60,25 +62,60 @@ def test_catalog_challenge_ids_are_unique() -> None:
 def test_catalog_runnable_ids_match_launch_set() -> None:
     runnable_ids = {
         entry.get("id")
-        for entry in load_catalog()
-        if entry.get("status") == "runnable"
+        for entry in runnable_entries()
     }
 
     assert runnable_ids == RUNNABLE_IDS
 
 
-def test_first_two_challenge_directories_have_required_files() -> None:
-    for challenge_dir in FIRST_RUNNABLE_DIRS:
+def test_runnable_challenge_directories_have_required_files() -> None:
+    for entry in runnable_entries():
+        challenge_dir = challenge_path(entry)
         assert challenge_dir.is_dir()
         for relative_path in REQUIRED_CHALLENGE_FILES:
             assert (challenge_dir / relative_path).is_file()
 
 
-def test_first_two_challenge_configs_parse() -> None:
-    for challenge_dir in FIRST_RUNNABLE_DIRS:
-        challenge = load_challenge(challenge_dir)
+def test_runnable_challenge_configs_parse() -> None:
+    for entry in runnable_entries():
+        challenge = load_challenge(challenge_path(entry))
 
         assert isinstance(challenge, ChallengeConfig)
+
+
+def test_runnable_challenges_have_at_least_three_public_fixtures() -> None:
+    for entry in runnable_entries():
+        fixtures = load_jsonl(challenge_path(entry) / "fixtures" / "public.jsonl")
+
+        assert len(fixtures) >= 3
+
+
+def test_runnable_graders_return_valid_reports_for_blank_outputs(tmp_path: Path) -> None:
+    for entry in runnable_entries():
+        challenge_dir = challenge_path(entry)
+        challenge = load_challenge(challenge_dir)
+        fixtures = load_jsonl(challenge_dir / "fixtures" / "public.jsonl")
+        case_runs = [
+            CaseRun(
+                case_id=fixture["case_id"],
+                input=fixture["input"],
+                output={},
+                passed=True,
+                duration_ms=0,
+                fixture=fixture,
+            )
+            for fixture in fixtures
+        ]
+
+        report = grade_cases(
+            challenge_dir=challenge_dir,
+            case_runs=case_runs,
+            transcript_path=tmp_path / f"{entry['id']}-transcript.jsonl",
+            challenge=challenge,
+        )
+
+        assert report.challenge_id == entry["id"]
+        assert report.max_score == challenge.scoring.max_score
 
 
 def test_echo_agent_has_fixture_that_requires_trusting_facts_over_message() -> None:

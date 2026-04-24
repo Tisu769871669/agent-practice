@@ -1,0 +1,40 @@
+id: "003"
+slug: "tool-picker"
+title: "Tool Picker"
+track: "tools"
+difficulty: "easy"
+status: "runnable"
+version: "0.1.0"
+summary: "Choose the correct simulated tool for a user request."
+tags:
+  - tools
+  - routing
+frameworks:
+  official:
+    - raw-python
+    - langchain
+    - langgraph
+  interface: "framework-neutral"
+entrypoint:
+  module: "solution.agent"
+  callable: "run"
+  signature: "run(input: dict, context: AgentContext) -> dict"
+schemas:
+  input: "schemas/input.schema.json"
+  output: "schemas/output.schema.json"
+fixtures:
+  public: "fixtures/public.jsonl"
+limits:
+  timeout_seconds: 60
+  max_tool_calls: 0
+  max_output_chars: 2000
+scoring:
+  max_score: 100
+  pass_score: 90
+  metrics:
+    - name: "schema_validity"
+      weight: 20
+    - name: "tool_selection"
+      weight: 40
+    - name: "argument_exactness"
+      weight: 40

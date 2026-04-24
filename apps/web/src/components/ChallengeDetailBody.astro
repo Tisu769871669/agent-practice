@@ -1,6 +1,6 @@
 ---
 import type { Challenge } from "../lib/challenges";
-import type { Locale } from "../lib/i18n";
+import { localizedPath, type Locale } from "../lib/i18n";
 
 const {
   challenge,
@@ -21,6 +21,12 @@ const copy = lang === "zh"
       input: "输入格式",
       output: "输出格式",
       scoring: "评分标准",
+      scoringStandard: "APS-1 判题标准",
+      acceptedRule: "通过定义",
+      acceptedText: "只有结构、运行、安全和分数门禁全部通过，才会得到 accepted。",
+      gatesTitle: "门禁",
+      verdictsTitle: "结果类型",
+      readPolicy: "查看完整评分标准",
       examples: "样例",
       exampleInput: "样例输入",
       exampleOutput: "样例输出",
@@ -37,6 +43,13 @@ const copy = lang === "zh"
       input: "Input Contract",
       output: "Output Contract",
       scoring: "Scoring",
+      scoringStandard: "APS-1 Grading Standard",
+      acceptedRule: "Accepted Rule",
+      acceptedText:
+        "A run is accepted only when structure, runtime, safety, and score gates all pass.",
+      gatesTitle: "Gates",
+      verdictsTitle: "Verdicts",
+      readPolicy: "Read full grading policy",
       examples: "Examples",
       exampleInput: "Example Input",
       exampleOutput: "Example Output",
@@ -47,6 +60,40 @@ const copy = lang === "zh"
 
 const detail = challenge.detail;
 const formatJson = (value: Record<string, unknown>) => JSON.stringify(value, null, 2);
+const gateItems = lang === "zh"
+  ? [
+      "schema_validity: 输出符合声明的 JSON schema 或结构化契约。",
+      "no_runtime_error: 提交运行时没有崩溃。",
+      "no_timeout: 每个用例都在时间限制内完成。",
+      "no_safety_violation: 安全和提示注入检查没有失败。",
+      "score_threshold: 总分达到本题通过线。",
+    ]
+  : [
+      "schema_validity: outputs satisfy the declared JSON schema or structured contract.",
+      "no_runtime_error: the submission does not crash during execution.",
+      "no_timeout: every case finishes within the runtime limit.",
+      "no_safety_violation: safety and prompt-injection checks pass.",
+      "score_threshold: total score reaches the challenge pass threshold.",
+    ];
+const verdictItems = lang === "zh"
+  ? [
+      ["accepted", "通过"],
+      ["wrong_answer", "答案错误"],
+      ["partial_pass", "部分得分"],
+      ["schema_error", "结构错误"],
+      ["runtime_error", "运行错误"],
+      ["timeout", "超时"],
+      ["safety_violation", "安全违规"],
+    ]
+  : [
+      ["accepted", "accepted"],
+      ["wrong_answer", "wrong answer"],
+      ["partial_pass", "partial pass"],
+      ["schema_error", "schema error"],
+      ["runtime_error", "runtime error"],
+      ["timeout", "timeout"],
+      ["safety_violation", "safety violation"],
+    ];
 ---
 
 {detail ? (
@@ -129,3 +176,35 @@ const formatJson = (value: Record<string, unknown>) => JSON.stringify(value, nul
     </article>
   </section>
 )}
+
+<section class="section aps-section">
+  <div class="section-head">
+    <div>
+      <div class="section-kicker">APS-1</div>
+      <h2>{copy.scoringStandard}</h2>
+    </div>
+    <a class="ghost-button" href={localizedPath("/scoring", lang)}>{copy.readPolicy}</a>
+  </div>
+  <div class="grading-grid">
+    <article class="detail-block scoring-rule">
+      <div class="section-kicker">{copy.acceptedRule}</div>
+      <code>accepted = all gates pass + score threshold met</code>
+      <p>{copy.acceptedText}</p>
+    </article>
+    <article class="detail-block">
+      <div class="section-kicker">{copy.gatesTitle}</div>
+      <ul class="gate-list">
+        {gateItems.map((gate) => <li>{gate}</li>)}
+      </ul>
+    </article>
+  </div>
+  <div class="section-kicker verdict-heading">{copy.verdictsTitle}</div>
+  <div class="verdict-grid">
+    {verdictItems.map(([name, label]) => (
+      <article class="verdict-chip">
+        <strong>{name}</strong>
+        <span>{label}</span>
+      </article>
+    ))}
+  </div>
+</section>

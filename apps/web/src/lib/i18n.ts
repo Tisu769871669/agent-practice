@@ -24,6 +24,7 @@ export const layoutCopy: Record<
     nav: {
       path: string;
       challenges: string;
+      scoring: string;
       contribute: string;
       github: string;
     };
@@ -36,6 +37,7 @@ export const layoutCopy: Record<
     nav: {
       path: "Path",
       challenges: "Challenges",
+      scoring: "Scoring",
       contribute: "Contribute",
       github: "GitHub",
     },
@@ -47,6 +49,7 @@ export const layoutCopy: Record<
     nav: {
       path: "路线",
       challenges: "题库",
+      scoring: "评分",
       contribute: "贡献",
       github: "GitHub",
     },

@@ -1,0 +1,97 @@
+---
+import Layout from "../../components/Layout.astro";
+
+const lang = "zh";
+
+const gates = [
+  ["schema_validity", "输出符合声明的 JSON schema 或结构化输出契约。"],
+  ["no_runtime_error", "提交在用例执行过程中没有崩溃。"],
+  ["no_timeout", "每个用例都在挑战规定的时间限制内完成。"],
+  ["no_safety_violation", "安全和提示注入检查没有失败。"],
+  ["score_threshold", "加权总分达到本题通过线。"],
+];
+
+const verdicts = [
+  ["accepted", "所有门禁通过，且分数达到通过线。"],
+  ["wrong_answer", "输出可以评分，但没有获得分数。"],
+  ["partial_pass", "获得部分分数，但没有通过挑战。"],
+  ["schema_error", "输出违反声明的结构化契约。"],
+  ["runtime_error", "提交在运行某个用例时崩溃。"],
+  ["timeout", "执行超过允许的运行时间。"],
+  ["safety_violation", "安全或提示注入防御指标失败。"],
+];
+---
+
+<Layout
+  title="Agent Practice | 评分"
+  description="本地智能体挑战的 APS-1 评分标准。"
+  lang={lang}
+  canonicalPath="/scoring"
+>
+  <section class="page-hero">
+    <div class="copy-block">
+      <div class="section-kicker">APS-1</div>
+      <h2>智能体题库需要能解释失败原因的判题器。</h2>
+      <p>
+        APS-1 是 Agent Practice 的第一版评分标准。它保留在线刷题的清晰体验：
+        本地确定性运行、单一 verdict、用例级反馈，并且不依赖隐藏云服务。
+      </p>
+    </div>
+    <div class="copy-block">
+      <div class="section-kicker">Accepted</div>
+      <pre><code>accepted = all gates pass + score threshold met</code></pre>
+      <p class="footer-note">
+        result 文件里仍保留 passed 布尔值用于兼容，但新的 UI 和工具应该优先读取 verdict。
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">门禁</div>
+        <h2>一次运行通过前必须满足什么</h2>
+      </div>
+    </div>
+    <div class="contribute-grid">
+      {gates.map(([name, text]) => (
+        <article>
+          <div class="mono">{name}</div>
+          <p>{text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">Verdicts</div>
+        <h2>结果类型</h2>
+      </div>
+    </div>
+    <div class="verdict-grid">
+      {verdicts.map(([name, text]) => (
+        <article class="verdict-chip">
+          <strong>{name}</strong>
+          <span>{text}</span>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section detail-grid">
+    <article class="detail-block">
+      <div class="section-kicker">失败原因</div>
+      <p>
+        每个失败结果都可以包含结构化 failure reasons。它们指向失败门禁、用例错误或指标反馈，同时不泄露隐藏测试。
+      </p>
+    </article>
+    <article class="detail-block">
+      <div class="section-kicker">为什么不先用 LLM 裁判</div>
+      <p>
+        本地确定性评分能让早期练习可复现。LLM-as-judge 以后可以用于更主观的任务，但应该先用确定性用例校准。
+      </p>
+    </article>
+  </section>
+</Layout>

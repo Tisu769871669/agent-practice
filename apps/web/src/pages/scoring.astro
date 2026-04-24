@@ -1,0 +1,96 @@
+---
+import Layout from "../components/Layout.astro";
+
+const gates = [
+  ["schema_validity", "Outputs match the declared JSON schema or structured output contract."],
+  ["no_runtime_error", "The submission finishes without crashing during case execution."],
+  ["no_timeout", "Every case stays within the challenge runtime limit."],
+  ["no_safety_violation", "Safety and prompt-injection checks do not fail."],
+  ["score_threshold", "The weighted score reaches the challenge pass threshold."],
+];
+
+const verdicts = [
+  ["accepted", "All gates pass and the score threshold is met."],
+  ["wrong_answer", "The output is gradeable but earns no credit."],
+  ["partial_pass", "The output earns some credit but does not pass."],
+  ["schema_error", "The output breaks the declared structured contract."],
+  ["runtime_error", "The submission crashes while a case runs."],
+  ["timeout", "Execution exceeds the allowed runtime."],
+  ["safety_violation", "A safety or injection-resistance metric fails."],
+];
+---
+
+<Layout
+  title="Agent Practice | Scoring"
+  description="APS-1 scoring standard for local agent challenges."
+  canonicalPath="/scoring"
+>
+  <section class="page-hero">
+    <div class="copy-block">
+      <div class="section-kicker">APS-1</div>
+      <h2>Agent challenges need a judge that explains the miss.</h2>
+      <p>
+        APS-1 is the first Agent Practice scoring standard. It keeps the online-judge feel:
+        deterministic local runs, a single verdict, case-level feedback, and no hidden cloud service.
+      </p>
+    </div>
+    <div class="copy-block">
+      <div class="section-kicker">Accepted</div>
+      <pre><code>accepted = all gates pass + score threshold met</code></pre>
+      <p class="footer-note">
+        The legacy passed boolean remains in result files, but new tooling should read verdict first.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">Gates</div>
+        <h2>What must be true before a run can pass</h2>
+      </div>
+    </div>
+    <div class="contribute-grid">
+      {gates.map(([name, text]) => (
+        <article>
+          <div class="mono">{name}</div>
+          <p>{text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">Verdicts</div>
+        <h2>The result vocabulary</h2>
+      </div>
+    </div>
+    <div class="verdict-grid">
+      {verdicts.map(([name, text]) => (
+        <article class="verdict-chip">
+          <strong>{name}</strong>
+          <span>{text}</span>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section detail-grid">
+    <article class="detail-block">
+      <div class="section-kicker">Failure Reasons</div>
+      <p>
+        Every failed result can include structured failure reasons. They point to the failed gate,
+        case error, or metric feedback without leaking hidden tests.
+      </p>
+    </article>
+    <article class="detail-block">
+      <div class="section-kicker">Why not LLM judging first?</div>
+      <p>
+        Local deterministic graders make early practice reproducible. LLM-as-judge can come later for
+        subjective tasks, but it should be calibrated against deterministic cases.
+      </p>
+    </article>
+  </section>
+</Layout>

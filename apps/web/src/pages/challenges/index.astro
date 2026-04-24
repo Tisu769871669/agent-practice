@@ -5,7 +5,7 @@ import { challenges, runnableChallenges } from "../../lib/challenges";
 const planned = challenges.length - runnableChallenges.length;
 ---
 
-<Layout title="Agent Practice | Challenge Catalog">
+<Layout title="Agent Practice | Challenge Catalog" canonicalPath="/challenges">
   <section class="page-hero">
     <div class="copy-block">
       <div class="section-kicker">Catalog</div>
@@ -40,7 +40,7 @@ const planned = challenges.length - runnableChallenges.length;
           </div>
           <span>{challenge.stage}</span>
           <span>{challenge.est}</span>
-          <span class={`status ${challenge.status}`}>{challenge.status}</span>
+          <span class={`status ${challenge.status}`}>{challenge.statusLabel}</span>
         </a>
       ))}
     </div>

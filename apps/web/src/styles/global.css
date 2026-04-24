@@ -25,7 +25,15 @@ body {
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 72px),
     var(--bg);
   color: var(--text);
-  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  font-family:
+    "Segoe UI",
+    "Noto Sans SC",
+    "Microsoft YaHei",
+    "PingFang SC",
+    "Helvetica Neue",
+    sans-serif;
+  overflow-wrap: anywhere;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -82,6 +90,12 @@ a {
   flex-wrap: wrap;
 }
 
+.language-toggle {
+  color: var(--accent);
+  border-left: 1px solid var(--line);
+  padding-left: 18px;
+}
+
 .page {
   width: min(var(--max), calc(100% - 32px));
   margin: 0 auto;
@@ -99,6 +113,11 @@ a {
   font-size: clamp(2.6rem, 6vw, 5rem);
   line-height: 0.96;
   margin: 0 0 16px;
+  text-wrap: balance;
+}
+
+.phrase {
+  display: inline-block;
 }
 
 .hero-copy p {
@@ -200,6 +219,7 @@ a {
 .copy-block h2 {
   margin: 6px 0;
   font-size: 1.8rem;
+  text-wrap: balance;
 }
 
 .section-head p,
@@ -230,6 +250,7 @@ a {
 
 .challenge-card h3 {
   margin: 12px 0 8px;
+  text-wrap: balance;
 }
 
 .tag-row {
@@ -368,6 +389,7 @@ a {
   margin: 8px 0 12px;
   font-size: clamp(2.2rem, 5vw, 4rem);
   line-height: 1;
+  text-wrap: balance;
 }
 
 .challenge-detail-hero p {
@@ -402,6 +424,34 @@ pre {
   border: 1px solid var(--line);
   background: #0a0b07;
   color: var(--accent);
+}
+
+.locale-zh body {
+  line-height: 1.68;
+}
+
+.locale-zh .hero-copy h1,
+.locale-zh .challenge-detail-hero h2 {
+  line-height: 1.08;
+}
+
+.locale-zh .kicker,
+.locale-zh .section-kicker {
+  font-family:
+    "Cascadia Code",
+    "Noto Sans SC",
+    "Microsoft YaHei",
+    monospace;
+}
+
+.locale-zh .challenge-card p,
+.locale-zh .copy-block p,
+.locale-zh .timeline-item p,
+.locale-zh .workflow-step p,
+.locale-zh .contribute-grid p,
+.locale-zh .challenge-detail-hero p,
+.locale-zh .detail-block p {
+  line-height: 1.75;
 }
 
 .footer-note {

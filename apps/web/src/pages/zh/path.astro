@@ -1,32 +1,35 @@
 ---
-import Layout from "../components/Layout.astro";
-import { challenges, stages } from "../lib/challenges";
+import Layout from "../../components/Layout.astro";
+import { getChallenges, getStages } from "../../lib/challenges";
+
+const lang = "zh";
+const challenges = getChallenges(lang);
+const stages = getStages(lang);
 ---
 
-<Layout title="Agent Practice | Learning Path" canonicalPath="/path">
+<Layout title="Agent Practice | 学习路线" lang={lang} canonicalPath="/path">
   <section class="page-hero">
     <div class="copy-block">
-      <div class="section-kicker">Route</div>
-      <h2>The official path is opinionated, not closed.</h2>
+      <div class="section-kicker">路线</div>
+      <h2>官方路线有观点，但不封闭。</h2>
       <p>
-        We teach through LangChain and LangGraph examples because they make the route concrete. The challenge contract
-        still stays framework-neutral: if your solution can satisfy the local runner, it belongs here.
+        我们用 LangChain 和 LangGraph 示例让路线更具体；挑战契约仍然保持框架无关。只要你的解法能通过本地 runner，它就属于这里。
       </p>
     </div>
     <div class="copy-block">
-      <div class="section-kicker">Stage Map</div>
+      <div class="section-kicker">阶段地图</div>
       <div class="chip-row">
         {stages.map((stage) => <span class="tag">{stage.name}</span>)}
       </div>
-      <p class="footer-note">Thirty challenges total. Ten launch runnable. The rest stay visible so contributors know what to build next.</p>
+      <p class="footer-note">共三十个挑战。首发十个可运行，其余题目保持可见，方便贡献者知道下一步该补什么。</p>
     </div>
   </section>
 
   <section class="section">
     <div class="section-head">
       <div>
-        <div class="section-kicker">Sequence</div>
-        <h2>All 30 challenges</h2>
+        <div class="section-kicker">顺序</div>
+        <h2>全部 30 个挑战</h2>
       </div>
     </div>
     <div class="list-table">

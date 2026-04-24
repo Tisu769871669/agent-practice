@@ -1,0 +1,46 @@
+---
+import Layout from "../../components/Layout.astro";
+
+const lang = "zh";
+---
+
+<Layout title="Agent Practice | 贡献" lang={lang} canonicalPath="/contribute">
+  <section class="page-hero">
+    <div class="copy-block">
+      <div class="section-kicker">贡献</div>
+      <h2>我们希望贡献者增加信号，而不是增加噪声。</h2>
+      <p>
+        最容易产生价值的贡献不是“更多 AI 内容”，而是更锋利的题目、更可靠的评分器、更清晰的 starter template，或者围绕本地工作流的更紧凑文档。
+      </p>
+    </div>
+    <div class="copy-block">
+      <div class="section-kicker">开源契约</div>
+      <p>通过仓库添加挑战目录、评分器、模板和文档。MVP 不包含账户、云端提交或托管排行榜。</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="contribute-grid">
+      <article>
+        <div class="mono">A</div>
+        <h3>挑战作者</h3>
+        <p>编写题面、fixtures、schemas 和确定性评分器，并保持运行契约稳定。</p>
+      </article>
+      <article>
+        <div class="mono">B</div>
+        <h3>模板维护者</h3>
+        <p>改进原生 Python、LangChain 和 LangGraph 示例，同时不把项目锁死在某一个框架里。</p>
+      </article>
+      <article>
+        <div class="mono">C</div>
+        <h3>评测构建者</h3>
+        <p>补充回归测试、评分严谨性和未来评测资产，同时保持本地可复现。</p>
+      </article>
+      <article>
+        <div class="mono">D</div>
+        <h3>界面贡献者</h3>
+        <p>在题库和文档扩展时，帮助静态站保持有用、紧凑、可读。</p>
+      </article>
+    </div>
+  </section>
+</Layout>

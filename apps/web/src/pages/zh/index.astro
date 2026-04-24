@@ -1,0 +1,121 @@
+---
+import ChallengeCard from "../../components/ChallengeCard.astro";
+import Layout from "../../components/Layout.astro";
+import RouteTimeline from "../../components/RouteTimeline.astro";
+import { getChallenges, getRunnableChallenges, getStages } from "../../lib/challenges";
+import { localizedPath } from "../../lib/i18n";
+
+const lang = "zh";
+const challenges = getChallenges(lang);
+const runnableChallenges = getRunnableChallenges(lang);
+const stages = getStages(lang);
+const total = challenges.length;
+const runnable = runnableChallenges.length;
+const stageCount = stages.length;
+---
+
+<Layout title="Agent Practice | 开源智能体训练实验室" lang={lang} canonicalPath="/">
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="kicker">本地优先 / 开源 / 可评分练习</div>
+      <h1>
+        <span class="phrase">像刷题一样，</span>
+        <span class="phrase">练智能体工程。</span>
+      </h1>
+      <p>
+        Agent Practice 把智能体学习变成一条可执行路线：先在网页上选题，再克隆仓库，用任意框架本地完成挑战，最后通过确定性 runner 和 grader 获得反馈。
+      </p>
+      <div class="actions">
+        <a class="button" href={localizedPath("/path", lang)}>开始路线</a>
+        <a
+          class="ghost-button"
+          href="https://github.com/Tisu769871669/agent-practice"
+          target="_blank"
+          rel="noreferrer"
+        >
+          在 GitHub 克隆
+        </a>
+      </div>
+    </div>
+
+    <aside class="panel hero-panel">
+      <div class="section-kicker">首发概览</div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <strong>{total}</strong>
+          <span class="muted">规划挑战</span>
+        </div>
+        <div class="stat-card">
+          <strong>{runnable}</strong>
+          <span class="muted">首发可运行</span>
+        </div>
+        <div class="stat-card">
+          <strong>{stageCount}</strong>
+          <span class="muted">学习阶段</span>
+        </div>
+        <div class="stat-card">
+          <strong>LC / LG</strong>
+          <span class="muted">官方示例</span>
+        </div>
+      </div>
+      <p class="footer-note">
+        官方路线使用 LangChain 和 LangGraph；运行契约保持框架无关。
+      </p>
+    </aside>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">学习路线</div>
+        <h2>从基础能力到综合项目</h2>
+      </div>
+      <a class="ghost-button" href={localizedPath("/path", lang)}>查看完整路线</a>
+    </div>
+    <RouteTimeline stages={stages} lang={lang} />
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">可运行首发题</div>
+        <h2>先从这十个挑战开始</h2>
+      </div>
+      <a class="ghost-button" href={localizedPath("/challenges", lang)}>浏览题库</a>
+    </div>
+    <div class="challenge-grid">
+      {runnableChallenges.map((challenge) => <ChallengeCard challenge={challenge} />)}
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">练习流程</div>
+        <h2>网页负责发现，仓库负责执行</h2>
+      </div>
+    </div>
+    <div class="workflow-grid">
+      <div class="workflow-step">
+        <div class="mono">01</div>
+        <strong>浏览</strong>
+        <p>根据路线和题库，选择难度与训练重点合适的挑战。</p>
+      </div>
+      <div class="workflow-step">
+        <div class="mono">02</div>
+        <strong>克隆</strong>
+        <p>把仓库拉到本地，选择原生 Python、LangChain、LangGraph 或自己的框架。</p>
+      </div>
+      <div class="workflow-step">
+        <div class="mono">03</div>
+        <strong>运行</strong>
+        <p>执行本地 runner，为每次尝试生成 result.json 和 transcript.jsonl。</p>
+      </div>
+      <div class="workflow-step">
+        <div class="mono">04</div>
+        <strong>改进</strong>
+        <p>根据确定性评分反馈收紧行为，再进入下一题。</p>
+      </div>
+    </div>
+  </section>
+</Layout>

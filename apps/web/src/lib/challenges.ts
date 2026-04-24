@@ -3,7 +3,15 @@ import { fileURLToPath } from "node:url";
 
 import { load } from "js-yaml";
 
-import { sitePath } from "./urls";
+import {
+  challengeZh,
+  difficultyLabels,
+  formatTag,
+  localizedPath,
+  type Locale,
+  stageNotesByLocale,
+  statusLabels,
+} from "./i18n";
 
 export type Difficulty = "easy" | "medium" | "hard" | "expert";
 export type ChallengeStatus = "runnable" | "planned";
@@ -15,7 +23,9 @@ export type Challenge = {
   track: string;
   stage: string;
   difficulty: Difficulty;
+  difficultyLabel: string;
   status: ChallengeStatus;
+  statusLabel: string;
   version: string;
   summary: string;
   tags: string[];
@@ -54,41 +64,6 @@ const catalogPath = fileURLToPath(
   new URL("../../../../challenges/catalog.yaml", import.meta.url),
 );
 
-const stageNotes: Record<string, { name: string; note: string }> = {
-  foundations: {
-    name: "Foundations",
-    note: "Instruction following, structured output, deterministic behavior.",
-  },
-  tools: {
-    name: "Tools",
-    note: "Tool choice, parameters, retries, bounded execution.",
-  },
-  rag: {
-    name: "RAG",
-    note: "Citations, source faithfulness, conflicting evidence.",
-  },
-  memory: {
-    name: "Memory",
-    note: "State compression, preferences, conflict handling.",
-  },
-  workflow: {
-    name: "Workflow",
-    note: "Routing, staged execution, recoverability.",
-  },
-  safety: {
-    name: "Safety",
-    note: "Prompt injection resistance and trust boundaries.",
-  },
-  evaluation: {
-    name: "Evaluation",
-    note: "Graders, regression suites, trace inspection.",
-  },
-  capstone: {
-    name: "Capstone",
-    note: "Integrated agent systems with realistic constraints.",
-  },
-};
-
 const stageOrder = [
   "foundations",
   "tools",
@@ -109,42 +84,73 @@ const estimatesByDifficulty: Record<Difficulty, string> = {
 
 const catalog = loadCatalog();
 
-export const challenges: Challenge[] = catalog.challenges.map((entry) => {
-  const stage = stageNotes[entry.track] ?? {
-    name: toTitleCase(entry.track),
-    note: "Practice track.",
-  };
-
-  return {
-    ...entry,
-    stage: stage.name,
-    focus: entry.tags.map(formatTag).join(" / "),
-    est: estimatesByDifficulty[entry.difficulty],
-    href: sitePath(`/challenges/${entry.slug}`),
-    directory: `challenges/${entry.id}-${entry.slug}`,
-  };
-});
+export const challenges: Challenge[] = getChallenges("en");
 
 export const runnableChallenges = challenges.filter(
   (challenge) => challenge.status === "runnable",
 );
 
-export const stages: Stage[] = stageOrder.map((track) => {
-  const stage = stageNotes[track];
-  const trackChallenges = challenges.filter((challenge) => challenge.track === track);
-
-  return {
-    track,
-    name: stage.name,
-    note: stage.note,
-    total: trackChallenges.length,
-    runnable: trackChallenges.filter((challenge) => challenge.status === "runnable")
-      .length,
-  };
-});
+export const stages: Stage[] = getStages("en");
 
 export function getChallengeBySlug(slug: string): Challenge | undefined {
   return challenges.find((challenge) => challenge.slug === slug);
+}
+
+export function getChallenges(locale: Locale = "en"): Challenge[] {
+  return catalog.challenges.map((entry) => {
+    const stageNotes = stageNotesByLocale[locale];
+    const stage = stageNotes[entry.track] ?? {
+      name: formatTag(entry.track, locale),
+      note: locale === "zh" ? "练习路线。" : "Practice track.",
+    };
+    const translated = locale === "zh" ? challengeZh[entry.id] : undefined;
+
+    return {
+      ...entry,
+      title: translated?.title ?? entry.title,
+      summary: translated?.summary ?? entry.summary,
+      stage: stage.name,
+      difficultyLabel: difficultyLabels[locale][entry.difficulty] ?? entry.difficulty,
+      statusLabel: statusLabels[locale][entry.status] ?? entry.status,
+      tags: entry.tags.map((tag) => formatTag(tag, locale)),
+      focus: entry.tags.map((tag) => formatTag(tag, locale)).join(" / "),
+      est: estimatesByDifficulty[entry.difficulty],
+      href: localizedPath(`/challenges/${entry.slug}`, locale),
+      directory: `challenges/${entry.id}-${entry.slug}`,
+    };
+  });
+}
+
+export function getRunnableChallenges(locale: Locale = "en"): Challenge[] {
+  return getChallenges(locale).filter((challenge) => challenge.status === "runnable");
+}
+
+export function getStages(locale: Locale = "en"): Stage[] {
+  const localizedChallenges = getChallenges(locale);
+  const stageNotes = stageNotesByLocale[locale];
+
+  return stageOrder.map((track) => {
+    const stage = stageNotes[track];
+    const trackChallenges = localizedChallenges.filter(
+      (challenge) => challenge.track === track,
+    );
+
+    return {
+      track,
+      name: stage.name,
+      note: stage.note,
+      total: trackChallenges.length,
+      runnable: trackChallenges.filter((challenge) => challenge.status === "runnable")
+        .length,
+    };
+  });
+}
+
+export function getLocalizedChallengeBySlug(
+  slug: string,
+  locale: Locale = "en",
+): Challenge | undefined {
+  return getChallenges(locale).find((challenge) => challenge.slug === slug);
 }
 
 function loadCatalog(): Catalog {
@@ -196,15 +202,4 @@ function isDifficulty(value: unknown): value is Difficulty {
 
 function isStatus(value: unknown): value is ChallengeStatus {
   return value === "runnable" || value === "planned";
-}
-
-function formatTag(value: string): string {
-  return value
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-function toTitleCase(value: string): string {
-  return formatTag(value);
 }

@@ -32,6 +32,8 @@ npm run web:dev -- --host 127.0.0.1 --port 4321
 
 Open `http://127.0.0.1:4321/`.
 
+Chinese pages are available at `http://127.0.0.1:4321/zh/`. Each public website route has a matching `/zh/...` route for simplified Chinese readers.
+
 Run the first challenge with the raw Python starter:
 
 ```powershell

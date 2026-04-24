@@ -1,10 +1,12 @@
 ---
-import Layout from "../../components/Layout.astro";
-import { challenges, type Challenge } from "../../lib/challenges";
-import { sitePath } from "../../lib/urls";
+import Layout from "../../../components/Layout.astro";
+import { getChallenges, type Challenge } from "../../../lib/challenges";
+import { localizedPath } from "../../../lib/i18n";
+
+const lang = "zh";
 
 export function getStaticPaths() {
-  return challenges.map((challenge) => ({
+  return getChallenges("zh").map((challenge) => ({
     params: { slug: challenge.slug },
     props: { challenge },
   }));
@@ -17,11 +19,12 @@ python -m agent_practice_runner.cli run ${challenge.id} --submission path/to/sub
 
 <Layout
   title={`Agent Practice | ${challenge.title}`}
+  lang={lang}
   canonicalPath={`/challenges/${challenge.slug}`}
 >
   <section class="challenge-detail-hero">
     <div>
-      <div class="section-kicker">Challenge {challenge.id}</div>
+      <div class="section-kicker">挑战 {challenge.id}</div>
       <h2>{challenge.title}</h2>
       <p>{challenge.summary}</p>
       <div class="chip-row">
@@ -32,7 +35,7 @@ python -m agent_practice_runner.cli run ${challenge.id} --submission path/to/sub
       </div>
     </div>
     <aside class="panel detail-panel">
-      <div class="section-kicker">Repository Path</div>
+      <div class="section-kicker">仓库路径</div>
       <p class="mono">{challenge.directory}</p>
       <div class="tag-row">
         {challenge.tags.map((tag) => <span class="tag compact">{tag}</span>)}
@@ -42,20 +45,19 @@ python -m agent_practice_runner.cli run ${challenge.id} --submission path/to/sub
 
   <section class="section detail-grid">
     <article class="detail-block">
-      <div class="section-kicker">Practice Signal</div>
+      <div class="section-kicker">练习信号</div>
       <h3>{challenge.focus}</h3>
       <p>
-        Solve this locally, inspect the grader report, then tighten the agent behavior until it satisfies the challenge
-        contract.
+        在本地完成这道题，查看评分报告，然后逐步收紧智能体行为，直到它满足挑战契约。
       </p>
     </article>
     <article class="detail-block">
-      <div class="section-kicker">Local Runner</div>
+      <div class="section-kicker">本地 Runner</div>
       <pre><code>{runCommand}</code></pre>
     </article>
   </section>
 
   <section class="section">
-    <a class="ghost-button" href={sitePath("/challenges")}>Back to catalog</a>
+    <a class="ghost-button" href={localizedPath("/challenges", lang)}>返回题库</a>
   </section>
 </Layout>

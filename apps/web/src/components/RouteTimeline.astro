@@ -1,7 +1,9 @@
 ---
 import type { Stage } from "../lib/challenges";
+import type { Locale } from "../lib/i18n";
 
-const { stages } = Astro.props as { stages: Stage[] };
+const { stages, lang = "en" } = Astro.props as { stages: Stage[]; lang?: Locale };
+const labels = lang === "zh" ? { tasks: "题", live: "可运行" } : { tasks: "tasks", live: "live" };
 ---
 
 <section class="timeline">
@@ -12,8 +14,8 @@ const { stages } = Astro.props as { stages: Stage[] };
         <h3>{stage.name}</h3>
         <p>{stage.note}</p>
         <div class="timeline-metrics">
-          <span>{stage.total} tasks</span>
-          <span>{stage.runnable} live</span>
+          <span>{stage.total} {labels.tasks}</span>
+          <span>{stage.runnable} {labels.live}</span>
         </div>
       </div>
     </div>

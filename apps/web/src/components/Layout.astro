@@ -1,12 +1,31 @@
 ---
 import "../styles/global.css";
-import { sitePath } from "../lib/urls";
+import {
+  layoutCopy,
+  localeMeta,
+  localizedPath,
+  oppositeLocale,
+  type Locale,
+} from "../lib/i18n";
 
-const { title = "Agent Practice", description = "Learn agent engineering by solving graded local challenges." } = Astro.props;
+const {
+  title = "Agent Practice",
+  lang = "en",
+  canonicalPath = "/",
+} = Astro.props as {
+  title?: string;
+  description?: string;
+  lang?: Locale;
+  canonicalPath?: string;
+};
+const locale = lang;
+const copy = layoutCopy[locale];
+const description = Astro.props.description ?? copy.defaultDescription;
+const alternateLocale = oppositeLocale(locale);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={localeMeta[locale].htmlLang} class={`locale-${locale}`}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,18 +35,27 @@ const { title = "Agent Practice", description = "Learn agent engineering by solv
   <body>
     <div class="site-shell">
       <header class="topbar">
-        <a href={sitePath("/")} class="brand">
+        <a href={localizedPath("/", locale)} class="brand">
           <span class="brand-mark">AP</span>
           <span class="brand-copy">
             <strong>Agent Practice</strong>
-            <small>Open-source agent training lab</small>
+            <small>{copy.tagline}</small>
           </span>
         </a>
         <nav class="nav">
-          <a href={sitePath("/path")}>Path</a>
-          <a href={sitePath("/challenges")}>Challenges</a>
-          <a href={sitePath("/contribute")}>Contribute</a>
-          <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+          <a href={localizedPath("/path", locale)}>{copy.nav.path}</a>
+          <a href={localizedPath("/challenges", locale)}>{copy.nav.challenges}</a>
+          <a href={localizedPath("/contribute", locale)}>{copy.nav.contribute}</a>
+          <a
+            href="https://github.com/Tisu769871669/agent-practice"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {copy.nav.github}
+          </a>
+          <a class="language-toggle" href={localizedPath(canonicalPath, alternateLocale)}>
+            {copy.switchLanguage}
+          </a>
         </nav>
       </header>
       <main class="page">

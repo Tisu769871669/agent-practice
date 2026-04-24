@@ -1,0 +1,50 @@
+---
+import Layout from "../../../components/Layout.astro";
+import { getChallenges, getRunnableChallenges } from "../../../lib/challenges";
+
+const lang = "zh";
+const challenges = getChallenges(lang);
+const runnableChallenges = getRunnableChallenges(lang);
+const planned = challenges.length - runnableChallenges.length;
+---
+
+<Layout title="Agent Practice | 题库" lang={lang} canonicalPath="/challenges">
+  <section class="page-hero">
+    <div class="copy-block">
+      <div class="section-kicker">题库</div>
+      <h2>按技能扫描，而不是按宣传词浏览。</h2>
+      <p>
+        这个题库优先展示工程师学习智能体时真正需要的信息：任务形态、难度、阶段、可运行状态，以及这道题希望你练强的能力。
+      </p>
+    </div>
+    <div class="copy-block">
+      <div class="section-kicker">首发筛选</div>
+      <div class="chip-row">
+        <span class="tag">入门</span>
+        <span class="tag">进阶</span>
+        <span class="tag">困难</span>
+        <span class="tag">专家</span>
+        <span class="tag">{runnableChallenges.length} 可运行</span>
+        <span class="tag">{planned} 规划中</span>
+      </div>
+      <p class="footer-note">本页由 <span class="mono">challenges/catalog.yaml</span> 生成。</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="list-table">
+      {challenges.map((challenge) => (
+        <a class="list-row" href={challenge.href}>
+          <span class="mono">{challenge.id}</span>
+          <div>
+            <strong>{challenge.title}</strong>
+            <span class="muted">{challenge.summary}</span>
+          </div>
+          <span>{challenge.stage}</span>
+          <span>{challenge.est}</span>
+          <span class={`status ${challenge.status}`}>{challenge.statusLabel}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>

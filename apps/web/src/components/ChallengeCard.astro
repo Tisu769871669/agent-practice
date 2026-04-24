@@ -7,7 +7,7 @@ const { challenge } = Astro.props as { challenge: Challenge };
 <a class={`challenge-card ${challenge.status}`} href={challenge.href}>
   <div class="card-top">
     <span class="mono">{challenge.id}</span>
-    <span class={`status ${challenge.status}`}>{challenge.status}</span>
+    <span class={`status ${challenge.status}`}>{challenge.statusLabel}</span>
   </div>
   <h3>{challenge.title}</h3>
   <p>{challenge.summary}</p>
@@ -16,7 +16,7 @@ const { challenge } = Astro.props as { challenge: Challenge };
   </div>
   <div class="meta-row">
     <span>{challenge.stage}</span>
-    <span>{challenge.difficulty}</span>
+    <span>{challenge.difficultyLabel}</span>
     <span>{challenge.est}</span>
   </div>
 </a>

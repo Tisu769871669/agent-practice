@@ -1,0 +1,9 @@
+schema_version: "0.1"
+submission_id: "local"
+template: "raw-python"
+entrypoint:
+  module: "solution.agent"
+  callable: "run"
+  signature: "run(input: dict, context: AgentContext) -> dict"
+metadata:
+  submission_name: "Raw Python starter"

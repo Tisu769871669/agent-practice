@@ -157,3 +157,33 @@ def test_json_only_rejects_wrong_dates_when_date_is_missing(tmp_path: Path) -> N
 
     assert report.passed is False
     assert report.score < challenge.scoring.pass_score
+
+
+def test_eval_harness_requires_integer_score_type(tmp_path: Path) -> None:
+    challenge_dir = ROOT / "challenges" / "017-eval-harness-basics"
+    challenge = load_challenge(challenge_dir)
+    fixtures = load_jsonl(challenge_dir / "fixtures" / "public.jsonl")
+    fixture = next(
+        fixture for fixture in fixtures if fixture["expected"]["score"] == 67
+    )
+    output = dict(fixture["expected"])
+    output["score"] = 67.0
+
+    report = grade_cases(
+        challenge_dir=challenge_dir,
+        case_runs=[
+            CaseRun(
+                case_id=fixture["case_id"],
+                input=fixture["input"],
+                output=output,
+                passed=True,
+                duration_ms=0,
+                fixture=fixture,
+            )
+        ],
+        transcript_path=tmp_path / "transcript.jsonl",
+        challenge=challenge,
+    )
+
+    assert report.passed is False
+    assert report.score < challenge.scoring.pass_score

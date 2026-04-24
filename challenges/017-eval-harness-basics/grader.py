@@ -30,7 +30,10 @@ def grade(case_runs, transcript_path, challenge):
 
         checks_ok = output.get("checks") == expected.get("checks")
         passed_ok = output.get("passed") is expected.get("passed")
-        score_ok = output.get("score") == expected.get("score")
+        score_ok = _integer_score_matches(
+            output.get("score"),
+            expected.get("score"),
+        )
 
         schema_passes += int(schema_valid)
         check_passes += int(checks_ok)
@@ -113,6 +116,10 @@ def _load_output_schema(challenge: Any) -> dict[str, Any]:
         "schemas/output.schema.json",
     )
     return json.loads(schema_path.read_text(encoding="utf-8"))
+
+
+def _integer_score_matches(actual: Any, expected: Any) -> bool:
+    return type(actual) is int and type(expected) is int and actual == expected
 
 
 def _validate(

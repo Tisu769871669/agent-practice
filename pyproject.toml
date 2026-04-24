@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Open-source agent engineering practice platform with local grading."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "MIT" }
+license = "MIT"
 dependencies = [
   "pydantic",
   "typer",
@@ -27,4 +27,12 @@ test = [
 [tool.pytest.ini_options]
 testpaths = [
   "tests",
+]
+
+[tool.setuptools.packages.find]
+where = [
+  "runner",
+]
+include = [
+  "agent_practice_runner*",
 ]
